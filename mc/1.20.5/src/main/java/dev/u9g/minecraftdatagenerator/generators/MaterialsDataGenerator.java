@@ -12,7 +12,6 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ToolComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -84,8 +83,9 @@ public class MaterialsDataGenerator implements IDataGenerator {
 
         Registry<Item> itemRegistry = DGU.getWorld().getRegistryManager().get(RegistryKeys.ITEM);
         itemRegistry.forEach(item -> {
-            if (item instanceof MiningToolItem toolItem) {
-                item.getComponents().get(DataComponentTypes.TOOL).rules()
+            ToolComponent toolComponent = item.getComponents().get(DataComponentTypes.TOOL);
+            if (toolComponent != null) {
+                toolComponent.rules()
                         .stream().map(ToolComponent.Rule::blocks)
                         .forEach(blocks -> {
                             Optional<TagKey<Block>> tagKey = blocks.getTagKey();
@@ -136,29 +136,30 @@ public class MaterialsDataGenerator implements IDataGenerator {
 
         itemRegistry.forEach(item -> {
             //Tools are handled rather easily and do not require anything else
-            if (item instanceof MiningToolItem toolItem) {
-                item.getComponents().get(DataComponentTypes.TOOL).rules()
+            ToolComponent toolComponent = item.getComponents().get(DataComponentTypes.TOOL);
+            if (toolComponent != null) {
+                toolComponent.rules()
                         .stream().map(ToolComponent.Rule::blocks)
                         .forEach(blocks -> {
-                                    Optional<TagKey<Block>> tagKey = blocks.getTagKey();
-                                    if (tagKey.isPresent()) {
-                                        String materialName = makeMaterialNameForTag(tagKey.get());
+                            Optional<TagKey<Block>> tagKey = blocks.getTagKey();
+                            if (tagKey.isPresent()) {
+                                String materialName = makeMaterialNameForTag(tagKey.get());
 
-                                        Map<Item, Float> materialSpeeds = materialMiningSpeeds.computeIfAbsent(materialName, k -> new LinkedHashMap<>());
-                                        float miningSpeed = item.getComponents().get(DataComponentTypes.TOOL).defaultMiningSpeed();
-                                        materialSpeeds.put(item, miningSpeed);
-                                    }
-                                }
-                        );
+                                Map<Item, Float> materialSpeeds = materialMiningSpeeds.computeIfAbsent(materialName, k -> new LinkedHashMap<>());
+                                float miningSpeed = item.getComponents().get(DataComponentTypes.TOOL).defaultMiningSpeed();
+                                materialSpeeds.put(item, miningSpeed);
+                            }
+                        });
+            }
 
-                //Swords require special treatment
-                if (item instanceof SwordItem) {
-                    cowebMaterialSpeeds.put(item, 15.0f);
-                    plantMaterialSpeeds.put(item, 1.5f);
-                    leavesMaterialSpeeds.put(item, 1.5f);
-                    gourdMaterialSpeeds.put(item, 1.5f);
-                }
-            }});
+            //Swords require special treatment
+            if (item instanceof SwordItem) {
+                cowebMaterialSpeeds.put(item, 15.0f);
+                plantMaterialSpeeds.put(item, 1.5f);
+                leavesMaterialSpeeds.put(item, 1.5f);
+                gourdMaterialSpeeds.put(item, 1.5f);
+            }
+        });
 
         COMPOSITE_MATERIALS.forEach(values -> createCompositeMaterial(materialMiningSpeeds, values));
 
