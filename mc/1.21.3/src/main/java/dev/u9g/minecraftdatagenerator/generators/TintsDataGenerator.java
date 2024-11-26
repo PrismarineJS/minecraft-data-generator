@@ -13,6 +13,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.FoliageColors;
 
@@ -38,10 +39,18 @@ public class TintsDataGenerator implements IDataGenerator {
         Map<Integer, Integer> resultColors = new LinkedHashMap<>();
 
         for (int redstoneLevel : RedstoneWireBlock.POWER.getValues()) {
-            int color = RedstoneWireBlock.getWireColor(redstoneLevel);
+            // Remove the unintended alpha channel from the redstone tint color
+            int color = removeAlphaChannel(RedstoneWireBlock.getWireColor(redstoneLevel));
             resultColors.put(redstoneLevel, color);
         }
         return resultColors;
+    }
+
+    private static int removeAlphaChannel(int color) {
+        float r = (float) (color >> 16 & 0xFF) / 255;
+        float g = (float) (color >> 8 & 0xFF) / 255;
+        float b = (float) (color & 0xFF) / 255;
+        return ColorHelper.fromFloats(0, r, g, b);
     }
 
     private static int getBlockColor(Block block) {
