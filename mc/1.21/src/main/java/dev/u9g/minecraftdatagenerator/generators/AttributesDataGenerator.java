@@ -8,6 +8,8 @@ import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.registry.RegistryKeys;
 
+import java.util.Objects;
+
 public class AttributesDataGenerator implements IDataGenerator {
     @Override
     public String getDataName() {
@@ -20,8 +22,13 @@ public class AttributesDataGenerator implements IDataGenerator {
         var registry = DGU.getWorld().getRegistryManager().get(RegistryKeys.ATTRIBUTE);
         for (EntityAttribute attribute : registry) {
             JsonObject obj = new JsonObject();
-            obj.addProperty("name", registry.getId(attribute).getPath().split("\\.")[1]);
-            obj.addProperty("resource", registry.getId(attribute).getPath());
+            String[] parts = Objects.requireNonNull(registry.getId(attribute)).getPath().split("\\.");
+            String name = parts[0].equals("generic") ? parts[1] : parts[0] + "_" + parts[1];
+            while(name.contains("_")) {
+                name = name.replaceFirst("_[a-z]", String.valueOf(Character.toUpperCase(name.charAt(name.indexOf("_") + 1))));
+            }
+            obj.addProperty("name", name);
+            obj.addProperty("resource", Objects.requireNonNull(registry.getId(attribute)).toString());
             obj.addProperty("min", ((ClampedEntityAttribute) attribute).getMinValue());
             obj.addProperty("max", ((ClampedEntityAttribute) attribute).getMaxValue());
             obj.addProperty("default", attribute.getDefaultValue());

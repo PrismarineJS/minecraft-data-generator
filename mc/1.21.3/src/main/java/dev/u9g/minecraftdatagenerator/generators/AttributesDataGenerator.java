@@ -22,8 +22,12 @@ public class AttributesDataGenerator implements IDataGenerator {
         var registry = DGU.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ATTRIBUTE);
         for (EntityAttribute attribute : registry) {
             JsonObject obj = new JsonObject();
-            obj.addProperty("name", Objects.requireNonNull(registry.getId(attribute)).toShortTranslationKey());
-            obj.addProperty("resource", Objects.requireNonNull(registry.getId(attribute)).toTranslationKey());
+            String name = Objects.requireNonNull(registry.getId(attribute)).getPath();
+            while(name.contains("_")) {
+                name = name.replaceFirst("_[a-z]", String.valueOf(Character.toUpperCase(name.charAt(name.indexOf("_") + 1))));
+            }
+            obj.addProperty("name", name);
+            obj.addProperty("resource", Objects.requireNonNull(registry.getId(attribute)).toString());
             obj.addProperty("min", ((ClampedEntityAttribute) attribute).getMinValue());
             obj.addProperty("max", ((ClampedEntityAttribute) attribute).getMaxValue());
             obj.addProperty("default", attribute.getDefaultValue());
