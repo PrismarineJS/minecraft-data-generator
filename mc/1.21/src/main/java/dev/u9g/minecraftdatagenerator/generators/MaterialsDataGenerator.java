@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.MiningToolItem;
@@ -34,6 +35,16 @@ public class MaterialsDataGenerator implements IDataGenerator {
             .add(ImmutableList.of(makeMaterialNameForTag(BlockTags.LEAVES), makeMaterialNameForTag(BlockTags.AXE_MINEABLE), makeMaterialNameForTag(BlockTags.HOE_MINEABLE)))
             .add(ImmutableList.of("vine_or_glow_lichen", "plant", makeMaterialNameForTag(BlockTags.AXE_MINEABLE)
             )).build();
+
+    private static final Map<String, Float> TOOL_SPEEDS = new HashMap<>() {{
+        // Base speeds for each tool type
+        put("wooden", 2.0f);
+        put("stone", 4.0f);
+        put("iron", 6.0f);
+        put("diamond", 8.0f);
+        put("netherite", 9.0f);
+        put("golden", 12.0f);
+    }};
 
     private static String makeMaterialNameForTag(TagKey<Block> tag) {
         return tag.id().getPath();
@@ -65,6 +76,20 @@ public class MaterialsDataGenerator implements IDataGenerator {
         allMaterials.put(compositeMaterialName, resultingToolSpeeds);
     }
 
+    private static float getToolSpeed(Item item) {
+        String itemName = item.toString().toLowerCase();
+        // Remove minecraft: prefix if present
+        if (itemName.startsWith("minecraft:")) {
+            itemName = itemName.substring("minecraft:".length());
+        }
+        for (Map.Entry<String, Float> entry : TOOL_SPEEDS.entrySet()) {
+            if (itemName.startsWith(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return 1.0f;
+    }
+
     public static List<MaterialInfo> getGlobalMaterialInfo() {
         ArrayList<MaterialInfo> resultList = new ArrayList<>();
 
@@ -85,7 +110,7 @@ public class MaterialsDataGenerator implements IDataGenerator {
         itemRegistry.forEach(item -> {
             if (item instanceof MiningToolItem toolItem) {
                 item.getComponents().get(DataComponentTypes.TOOL).rules()
-                        .stream().map(rule -> rule.blocks())
+                        .stream().map(ToolComponent.Rule::blocks)
                         .forEach(blocks -> {
                             Optional<TagKey<Block>> tagKey = blocks.getTagKey();
                             if (tagKey.isPresent()) {
@@ -134,30 +159,28 @@ public class MaterialsDataGenerator implements IDataGenerator {
         materialMiningSpeeds.put("wool", ImmutableMap.of(Items.SHEARS, 5.0f));
 
         itemRegistry.forEach(item -> {
-            //Tools are handled rather easily and do not require anything else
             if (item instanceof MiningToolItem toolItem) {
                 item.getComponents().get(DataComponentTypes.TOOL).rules()
-                        .stream().map(rule -> rule.blocks())
+                        .stream().map(ToolComponent.Rule::blocks)
                         .forEach(blocks -> {
-                                    Optional<TagKey<Block>> tagKey = blocks.getTagKey();
-                                    if (tagKey.isPresent()) {
-                                        String materialName = makeMaterialNameForTag(tagKey.get());
+                            Optional<TagKey<Block>> tagKey = blocks.getTagKey();
+                            if (tagKey.isPresent()) {
+                                String materialName = makeMaterialNameForTag(tagKey.get());
+                                Map<Item, Float> materialSpeeds = materialMiningSpeeds.computeIfAbsent(materialName, k -> new LinkedHashMap<>());
+                                float baseSpeed = getToolSpeed(item);
+                                materialSpeeds.put(item, baseSpeed);
+                            }
+                        });
+            }
 
-                                        Map<Item, Float> materialSpeeds = materialMiningSpeeds.computeIfAbsent(materialName, k -> new LinkedHashMap<>());
-                                        float miningSpeed = item.getComponents().get(DataComponentTypes.TOOL).defaultMiningSpeed();
-                                        materialSpeeds.put(item, miningSpeed);
-                                    }
-                                }
-                        );
-
-                //Swords require special treatment
-                if (item instanceof SwordItem) {
-                    cowebMaterialSpeeds.put(item, 15.0f);
-                    plantMaterialSpeeds.put(item, 1.5f);
-                    leavesMaterialSpeeds.put(item, 1.5f);
-                    gourdMaterialSpeeds.put(item, 1.5f);
-                }
-            }});
+            //Swords require special treatment
+            if (item instanceof SwordItem) {
+                cowebMaterialSpeeds.put(item, 15.0f);
+                plantMaterialSpeeds.put(item, 1.5f);
+                leavesMaterialSpeeds.put(item, 1.5f);
+                gourdMaterialSpeeds.put(item, 1.5f);
+            }
+        });
 
         COMPOSITE_MATERIALS.forEach(values -> createCompositeMaterial(materialMiningSpeeds, values));
 

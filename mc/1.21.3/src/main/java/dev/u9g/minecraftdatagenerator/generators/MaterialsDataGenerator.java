@@ -35,6 +35,30 @@ public class MaterialsDataGenerator implements IDataGenerator {
             .add(ImmutableList.of("vine_or_glow_lichen", "plant", makeMaterialNameForTag(BlockTags.AXE_MINEABLE)
             )).build();
 
+    private static final Map<String, Float> TOOL_SPEEDS = new HashMap<>() {{
+        // Base speeds for each tool type
+        put("wooden", 2.0f);
+        put("stone", 4.0f);
+        put("iron", 6.0f);
+        put("diamond", 8.0f);
+        put("netherite", 9.0f);
+        put("golden", 12.0f);
+    }};
+
+    private static float getToolSpeed(Item item) {
+        String itemName = item.toString().toLowerCase();
+        // Remove minecraft: prefix if present
+        if (itemName.startsWith("minecraft:")) {
+            itemName = itemName.substring("minecraft:".length());
+        }
+        for (Map.Entry<String, Float> entry : TOOL_SPEEDS.entrySet()) {
+            if (itemName.startsWith(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return 1.0f;
+    }
+
     private static String makeMaterialNameForTag(TagKey<Block> tag) {
         return tag.id().getPath();
     }
@@ -144,8 +168,8 @@ public class MaterialsDataGenerator implements IDataGenerator {
                                         String materialName = makeMaterialNameForTag(tagKey.get());
 
                                         Map<Item, Float> materialSpeeds = materialMiningSpeeds.computeIfAbsent(materialName, k -> new LinkedHashMap<>());
-                                        float miningSpeed = item.getComponents().get(DataComponentTypes.TOOL).defaultMiningSpeed();
-                                        materialSpeeds.put(item, miningSpeed);
+                                        float baseSpeed = getToolSpeed(item);
+                                        materialSpeeds.put(item, baseSpeed);
                                     }
                                 }
                         );
