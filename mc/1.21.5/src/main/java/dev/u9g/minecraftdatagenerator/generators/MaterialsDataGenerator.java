@@ -136,7 +136,7 @@ public class MaterialsDataGenerator implements IDataGenerator {
         Registry<Item> itemRegistry = DGU.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ITEM);
 
         Map<String, Map<Item, Float>> materialMiningSpeeds = new LinkedHashMap<>();
-        materialMiningSpeeds.put("default", ImmutableMap.of());
+        materialMiningSpeeds.put("default", new LinkedHashMap<>());
 
         //Special materials used for shears and swords special mining speed logic
         Map<Item, Float> leavesMaterialSpeeds = new LinkedHashMap<>();
@@ -152,8 +152,14 @@ public class MaterialsDataGenerator implements IDataGenerator {
         //Shears need special handling because they do not follow normal rules like tools
         leavesMaterialSpeeds.put(Items.SHEARS, 15.0f);
         cowebMaterialSpeeds.put(Items.SHEARS, 15.0f);
-        materialMiningSpeeds.put("vine_or_glow_lichen", ImmutableMap.of(Items.SHEARS, 2.0f));
-        materialMiningSpeeds.put("wool", ImmutableMap.of(Items.SHEARS, 5.0f));
+        
+        Map<Item, Float> vineOrGlowLichenSpeeds = new LinkedHashMap<>();
+        vineOrGlowLichenSpeeds.put(Items.SHEARS, 2.0f);
+        materialMiningSpeeds.put("vine_or_glow_lichen", vineOrGlowLichenSpeeds);
+        
+        Map<Item, Float> woolSpeeds = new LinkedHashMap<>();
+        woolSpeeds.put(Items.SHEARS, 5.0f);
+        materialMiningSpeeds.put("wool", woolSpeeds);
 
         itemRegistry.forEach(item -> {
             //Tools are handled rather easily and do not require anything else

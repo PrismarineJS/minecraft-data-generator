@@ -77,18 +77,21 @@ public class RecipeDataGenerator implements IDataGenerator {
                 ingr.add(null);
                 continue;
             }
-            var matching = stacks.get().getMatchingItems(); // FIXME: fix when there are more than one matching stack
-            if (matching.findAny().isEmpty()) {
+            var matchingList = stacks.get().getMatchingItems().toList();
+            if (matchingList.isEmpty()) {
                 ingr.add(null);
                 continue;
-            } else if (matching.count() > n){
-                ingr.add(getRawIdFor(matching.skip(n).findFirst().get().value()));
             } else {
-                ingr.add(getRawIdFor(matching.findFirst().get().value()));
-            }
-            if (matching.count()-1 > n && !hasIncremented) {
-                generateShapedRecipe(registryManager, finalObj, sr, n+1);
-                hasIncremented = true;
+                // we already have matchingList from above
+                if (matchingList.size() > n) {
+                    ingr.add(getRawIdFor(matchingList.get(n).value()));
+                } else {
+                    ingr.add(getRawIdFor(matchingList.get(0).value()));
+                }
+                if (matchingList.size() - 1 > n && !hasIncremented) {
+                    generateShapedRecipe(registryManager, finalObj, sr, n+1);
+                    hasIncremented = true;
+                }
             }
         }
 
