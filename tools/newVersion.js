@@ -6,14 +6,19 @@ function raise (message) {
   process.exit(1)
 }
 
-const [oldVersion, newVersion] = process.argv.slice(2)
-if (!oldVersion || !newVersion) raise('Usage: node newVersion.js <oldVersion> <newVersion>')
+const manifest = require('../versions.json')
+const [newVersion] = process.argv.slice(2)
+if (!newVersion) raise('Usage: node newVersion.js <newVersion>')
 
+// change dir to __dirname
+const oldVersion = manifest.at(-1)
 const oldDir = join(__dirname, '../mc', oldVersion)
 const newDir = join(__dirname, '../mc', newVersion)
 
-if (!fs.existsSync(oldDir)) raise(`Old version directory does not exist: ${oldDir}`)
-if (fs.existsSync(newDir)) raise(`New version directory already exists: ${newDir}`)
+if (fs.existsSync(newDir)) {
+  console.warn(`New version directory already exists: ${newDir}`)
+  process.exit(0)
+}
 
 fs.cpSync(oldDir, newDir, { recursive: true })
 
