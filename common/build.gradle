@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api 'com.google.code.gson:gson:2.10.1'
-    implementation 'io.github.classgraph:classgraph:4.8.172'
-    implementation "net.lenni0451:Reflect:1.3.3"
+    api 'com.google.code.gson:gson:2.13.1'
+    implementation 'io.github.classgraph:classgraph:4.8.179'
+    implementation "net.lenni0451:Reflect:1.5.0"
 }
