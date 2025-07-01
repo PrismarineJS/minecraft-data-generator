@@ -17,7 +17,3 @@ jobs:
       with:
         # NOTE: You must specify a Personal Access Token (PAT) with repo access here. While you can use the default GITHUB_TOKEN, actions taken with it will not trigger other actions, so if you have a CI workflow, commits created by this action will not trigger it.
         token: ${{ secrets.PAT_PASSWORD }}
-        /rs.commands: |
-          [
-            { "update": ".github/update.js" }
-          ]
