@@ -3,27 +3,27 @@ package dev.u9g.minecraftdatagenerator.generators;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.u9g.minecraftdatagenerator.util.DGU;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
 
 import java.util.Objects;
 
 public class FoodsDataGenerator implements IDataGenerator {
     public static JsonObject generateFoodDescriptor(Registry<Item> registry, Item foodItem) {
         JsonObject foodDesc = new JsonObject();
-        Identifier registryKey = registry.getKey(foodItem).orElseThrow().getValue();
+        ResourceLocation registryKey = registry.getKey(foodItem);
 
-        foodDesc.addProperty("id", registry.getRawId(foodItem));
+        foodDesc.addProperty("id", registry.getId(foodItem));
         foodDesc.addProperty("name", registryKey.getPath());
 
-        foodDesc.addProperty("stackSize", foodItem.getMaxCount());
-        foodDesc.addProperty("displayName", DGU.translateText(foodItem.getTranslationKey()));
+        foodDesc.addProperty("stackSize", foodItem.getDefaultMaxStackSize());
+        foodDesc.addProperty("displayName", DGU.translateText(foodItem.getDescriptionId()));
 
-        FoodComponent foodComponent = Objects.requireNonNull(foodItem.getComponents().get(DataComponentTypes.FOOD));
+        FoodProperties foodComponent = Objects.requireNonNull(foodItem.components().get(DataComponents.FOOD));
         float foodPoints = foodComponent.nutrition();
         float saturationRatio = foodComponent.saturation() * 2.0F;
         float saturation = foodPoints * saturationRatio;
@@ -43,9 +43,9 @@ public class FoodsDataGenerator implements IDataGenerator {
 
     public JsonArray generateDataJson() {
         JsonArray resultsArray = new JsonArray();
-        Registry<Item> itemRegistry = DGU.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ITEM);
+        Registry<Item> itemRegistry = DGU.getWorld().registryAccess().lookupOrThrow(Registries.ITEM);
         itemRegistry.stream()
-                .filter(i -> i.getComponents().contains(DataComponentTypes.FOOD))
+                .filter(i -> i.components().has(DataComponents.FOOD))
                 .forEach(food -> resultsArray.add(generateFoodDescriptor(itemRegistry, food)));
         return resultsArray;
     }

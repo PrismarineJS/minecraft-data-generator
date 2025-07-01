@@ -3,31 +3,31 @@ package dev.u9g.minecraftdatagenerator.generators;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.u9g.minecraftdatagenerator.util.DGU;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class EffectsDataGenerator implements IDataGenerator {
-    public static JsonObject generateEffect(Registry<StatusEffect> registry, StatusEffect statusEffect) {
+    public static JsonObject generateEffect(Registry<MobEffect> registry, MobEffect mobEffect) {
         JsonObject effectDesc = new JsonObject();
-        Identifier registryKey = registry.getKey(statusEffect).orElseThrow().getValue();
+        ResourceLocation registryKey = registry.getKey(mobEffect);
 
-        effectDesc.addProperty("id", registry.getRawId(statusEffect));
-        if (statusEffect == StatusEffects.UNLUCK) {
+        effectDesc.addProperty("id", registry.getId(mobEffect));
+        if (mobEffect == MobEffects.UNLUCK.value()) {
             effectDesc.addProperty("name", "BadLuck");
             effectDesc.addProperty("displayName", "Bad Luck");
         } else {
             effectDesc.addProperty("name", Arrays.stream(registryKey.getPath().split("_")).map(StringUtils::capitalize).collect(Collectors.joining()));
-            effectDesc.addProperty("displayName", DGU.translateText(statusEffect.getTranslationKey()));
+            effectDesc.addProperty("displayName", DGU.translateText(mobEffect.getDescriptionId()));
         }
 
-        effectDesc.addProperty("type", statusEffect.isBeneficial() ? "good" : "bad");
+        effectDesc.addProperty("type", mobEffect.isBeneficial() ? "good" : "bad");
         return effectDesc;
     }
 
@@ -39,8 +39,8 @@ public class EffectsDataGenerator implements IDataGenerator {
     @Override
     public JsonArray generateDataJson() {
         JsonArray resultsArray = new JsonArray();
-        Registry<StatusEffect> statusEffectRegistry = DGU.getWorld().getRegistryManager().getOrThrow(RegistryKeys.STATUS_EFFECT);
-        statusEffectRegistry.forEach(effect -> resultsArray.add(generateEffect(statusEffectRegistry, effect)));
+        Registry<MobEffect> mobEffectRegistry = DGU.getWorld().registryAccess().lookupOrThrow(Registries.MOB_EFFECT);
+        mobEffectRegistry.forEach(effect -> resultsArray.add(generateEffect(mobEffectRegistry, effect)));
         return resultsArray;
     }
 }

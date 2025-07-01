@@ -1,9 +1,9 @@
 package dev.u9g.minecraftdatagenerator.util;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.locale.Language;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Language;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 public class DGU {
     @SuppressWarnings("deprecation")
@@ -12,10 +12,10 @@ public class DGU {
     }
 
     public static String translateText(String translationKey) {
-        return Language.getInstance().get(translationKey);
+        return Language.getInstance().getOrDefault(translationKey);
     }
 
-    public static World getWorld() {
-        return getCurrentlyRunningServer().getOverworld();
+    public static Level getWorld() {
+        return getCurrentlyRunningServer().overworld();
     }
 }
