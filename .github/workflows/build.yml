@@ -31,6 +31,8 @@ jobs:
           
           versions="${versions%,*}]"
           echo "versions=$versions" >> "$GITHUB_OUTPUT"
+      - name: Ensure that versions.json includes all versions
+        run: node -e 'const fs = require("fs"); const versions = JSON.parse(fs.readFileSync("versions.json", "utf8")); const expectedVersions = fs.readdirSync("mc"); if (expectedVersions.length !== versions.length || !expectedVersions.every(v => versions.includes(v))) { throw new Error("versions.json does not match the expected versions in mc/ folder"); }'
 
   build:
     needs: define-versions
