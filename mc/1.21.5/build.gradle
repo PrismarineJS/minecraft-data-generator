@@ -8,10 +8,9 @@ unimined.minecraft {
     version "1.21.5"
 
     mappings {
-        intermediary()
-        yarn(1)
-
-        devFallbackNamespace "intermediary"
+        mojmap()
+        
+        devFallbackNamespace "mojmap"
     }
 
     customPatcher(new CustomOfficialFabricMinecraftTransformer(project, delegate as MinecraftProvider)) {

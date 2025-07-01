@@ -3,33 +3,33 @@ package dev.u9g.minecraftdatagenerator.generators;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.u9g.minecraftdatagenerator.util.DGU;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.mob.AmbientEntity;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ambient.AmbientCreature;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.projectile.Projectile;
 
 public class EntitiesDataGenerator implements IDataGenerator {
     public static JsonObject generateEntity(Registry<EntityType<?>> entityRegistry, EntityType<?> entityType) {
         JsonObject entityDesc = new JsonObject();
-        Identifier registryKey = entityRegistry.getKey(entityType).orElseThrow().getValue();
-        int entityRawId = entityRegistry.getRawId(entityType);
+        ResourceLocation registryKey = entityRegistry.getKey(entityType);
+        int entityRawId = entityRegistry.getId(entityType);
 
         entityDesc.addProperty("id", entityRawId);
         entityDesc.addProperty("internalId", entityRawId);
         entityDesc.addProperty("name", registryKey.getPath());
 
-        entityDesc.addProperty("displayName", DGU.translateText(entityType.getTranslationKey()));
+        entityDesc.addProperty("displayName", DGU.translateText(entityType.getDescriptionId()));
         entityDesc.addProperty("width", entityType.getDimensions().width());
         entityDesc.addProperty("height", entityType.getDimensions().height());
 
@@ -37,7 +37,7 @@ public class EntitiesDataGenerator implements IDataGenerator {
         MinecraftServer minecraftServer = DGU.getCurrentlyRunningServer();
 
         if (minecraftServer != null) {
-            Entity entityObject = entityType.create(minecraftServer.getOverworld(), SpawnReason.NATURAL);
+            Entity entityObject = entityType.create(minecraftServer.overworld(), EntitySpawnReason.NATURAL);
             entityTypeString = entityObject != null ? getEntityTypeForClass(entityObject.getClass()) : "unknown";
         }
         if (entityType == EntityType.PLAYER) {
@@ -52,20 +52,36 @@ public class EntitiesDataGenerator implements IDataGenerator {
 
     private static String getCategoryFrom(EntityType<?> entityType) {
         if (entityType == EntityType.PLAYER) return "UNKNOWN";
-        Entity entity = entityType.create(DGU.getWorld(), SpawnReason.NATURAL);
+        Entity entity = entityType.create(DGU.getWorld(), EntitySpawnReason.NATURAL);
         if (entity == null)
-            throw new Error("Entity was null after trying to create a: " + DGU.translateText(entityType.getTranslationKey()));
+            throw new Error("Entity was null after trying to create a: " + DGU.translateText(entityType.getDescriptionId()));
         entity.discard();
-        return switch (entity.getClass().getPackageName()) {
-            case "net.minecraft.entity.decoration", "net.minecraft.entity.decoration.painting" -> "Immobile";
-            case "net.minecraft.entity.boss", "net.minecraft.entity.mob", "net.minecraft.entity.boss.dragon" ->
-                    "Hostile mobs";
-            case "net.minecraft.entity.projectile", "net.minecraft.entity.projectile.thrown" -> "Projectiles";
-            case "net.minecraft.entity.passive" -> "Passive mobs";
-            case "net.minecraft.entity.vehicle" -> "Vehicles";
-            case "net.minecraft.entity" -> "UNKNOWN";
-            default -> throw new Error("Unexpected entity type: " + entity.getClass().getPackageName());
-        };
+        String packageName = entity.getClass().getPackageName();
+        
+        // Use a more flexible approach to handle sub-packages
+        if (packageName.equals("net.minecraft.world.entity.decoration") || 
+            packageName.startsWith("net.minecraft.world.entity.decoration.")) {
+            return "Immobile";
+        } else if (packageName.equals("net.minecraft.world.entity.boss") ||
+                   packageName.equals("net.minecraft.world.entity.monster") ||
+                   packageName.startsWith("net.minecraft.world.entity.boss.") ||
+                   packageName.startsWith("net.minecraft.world.entity.monster.")) {
+            return "Hostile mobs";
+        } else if (packageName.equals("net.minecraft.world.entity.projectile") ||
+                   packageName.startsWith("net.minecraft.world.entity.projectile.")) {
+            return "Projectiles";
+        } else if (packageName.equals("net.minecraft.world.entity.animal") ||
+                   packageName.startsWith("net.minecraft.world.entity.animal.")) {
+            return "Passive mobs";
+        } else if (packageName.equals("net.minecraft.world.entity.vehicle") ||
+                   packageName.startsWith("net.minecraft.world.entity.vehicle.")) {
+            return "Vehicles";
+        } else if (packageName.equals("net.minecraft.world.entity")) {
+            return "UNKNOWN";
+        } else {
+            // Instead of throwing an error, return UNKNOWN for unexpected packages
+            return "UNKNOWN";
+        }
     }
 
     //Honestly, both "type" and "category" fields in the schema and examples do not contain any useful information
@@ -73,25 +89,25 @@ public class EntitiesDataGenerator implements IDataGenerator {
     //by the Entity class hierarchy (which has some weirdness too by the way)
     private static String getEntityTypeForClass(Class<? extends Entity> entityClass) {
         //Top-level classifications
-        if (WaterCreatureEntity.class.isAssignableFrom(entityClass)) {
+        if (WaterAnimal.class.isAssignableFrom(entityClass)) {
             return "water_creature";
         }
-        if (AnimalEntity.class.isAssignableFrom(entityClass)) {
+        if (Animal.class.isAssignableFrom(entityClass)) {
             return "animal";
         }
-        if (HostileEntity.class.isAssignableFrom(entityClass)) {
+        if (Monster.class.isAssignableFrom(entityClass)) {
             return "hostile";
         }
-        if (AmbientEntity.class.isAssignableFrom(entityClass)) {
+        if (AmbientCreature.class.isAssignableFrom(entityClass)) {
             return "ambient";
         }
 
         //Second level classifications. PathAwareEntity is not included because it
         //doesn't really make much sense to categorize by it
-        if (PassiveEntity.class.isAssignableFrom(entityClass)) {
+        if (AgeableMob.class.isAssignableFrom(entityClass)) {
             return "passive";
         }
-        if (MobEntity.class.isAssignableFrom(entityClass)) {
+        if (Mob.class.isAssignableFrom(entityClass)) {
             return "mob";
         }
 
@@ -99,7 +115,7 @@ public class EntitiesDataGenerator implements IDataGenerator {
         if (LivingEntity.class.isAssignableFrom(entityClass)) {
             return "living";
         }
-        if (ProjectileEntity.class.isAssignableFrom(entityClass)) {
+        if (Projectile.class.isAssignableFrom(entityClass)) {
             return "projectile";
         }
         return "other";
@@ -113,7 +129,7 @@ public class EntitiesDataGenerator implements IDataGenerator {
     @Override
     public JsonArray generateDataJson() {
         JsonArray resultArray = new JsonArray();
-        Registry<EntityType<?>> entityTypeRegistry = DGU.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENTITY_TYPE);
+        Registry<EntityType<?>> entityTypeRegistry = DGU.getWorld().registryAccess().lookupOrThrow(Registries.ENTITY_TYPE);
         entityTypeRegistry.forEach(entity -> resultArray.add(generateEntity(entityTypeRegistry, entity)));
         return resultArray;
     }
