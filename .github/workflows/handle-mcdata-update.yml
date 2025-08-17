@@ -9,8 +9,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Update minecraft data
-        run: 'cd minecraft-data/ && git fetch --all --tags && git checkout ${{ github.event.client_payload.tag }}'
       - run: npm install # install gh-helpers
       - run: node .github/commands/bump.js ${{ github.event.client_payload.tag }}
         env:
