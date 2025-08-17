@@ -13,7 +13,7 @@ module.exports = async ([newVersion], helpers) => {
     exec('git checkout -b bump')
     exec('git config user.name "github-actions[bot]"')
     exec('git config user.email "41898282+github-actions[bot]@users.noreply.github.com"')
-    exec('git add mc/' + newVersion)
+    exec('git add mc versions.json')
     exec('git commit -m "Add version ' + newVersion + '"')
     exec('git push origin bump --force')
     const pr = await gh.createPullRequest(
