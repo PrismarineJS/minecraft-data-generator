@@ -1,6 +1,6 @@
 name: handle-mcdata-update
 on:
-  repository_dispatch:
+  workflow_dispatch:
     inputs:
       version:
         description: 'What new version is like `1.21.6`'
