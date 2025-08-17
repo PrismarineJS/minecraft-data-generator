@@ -9,7 +9,7 @@ const exec = (a, o) => {
 module.exports = async ([newVersion], helpers) => {
   try {
     bump(newVersion)
-    try { exec('git branch -D bump') } catch () { console.log('No existing branch to delete; ok.') }
+    try { exec('git branch -D bump') } catch (e) { console.log('No existing branch to delete; ok.') }
     exec('git checkout -b bump')
     exec('git add mc/' + newVersion)
     exec('git commit -m "Add version ' + newVersion + '"')
