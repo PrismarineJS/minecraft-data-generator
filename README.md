@@ -25,14 +25,30 @@ You can then find the minecraft-data in the `mc/<version>/run/minecraft-data` di
 
 ## Adding a new version
 
-To add a new version, you need to create a new directory in the root directory with the version name.
-Then you need to add the version to the list in the `settings.gradle` file.
-Then also add it to the `.github/workflows/build.yml` file.
-Then copy the code of the most recently released version into the new module directory.
-Then you need to change the values in the `build.gradle` file.
-At last, you need to fix all code issues that are caused by the new version.
-For that, use an IDE like IntelliJ IDEA to fix the issues.
+Generally, our automated PR system will automatically create a new PR for a new version, so you just have to clone the auto opened PR and continue work on it.
+
+### Manual setup
+
+To add a new version manually, run
+```
+npm run bump <version>
+```
+
+For example, `npm run bump 1.21.6` will:
+* Create mc/1.21.6 as a copy of 1.21.5
+* Update mc/1.21.6/build.gradle for 1.21.6
+* Add the version to `versions.json`
+
+### Updating
+
+Then, you need to fix all code issues that are caused by the new version as `mc/1.21.6` for example may need changes for the latest version of Minecraft.
+
+Refer to Minecraft source code diffs for reference, as the code uses standard Mojmaps.
+
+You can use an IDE like IntelliJ IDEA to manuall fix the issues or an LLM agent that has access to the source code diff.
+
 Once everything compiles, you can commit the changes, push them to your fork and create a pull request.
+
 Once your PR was accepted and merged, the new version will be available in the next release.
 
 ## Technical info

@@ -118,3 +118,6 @@ gradle-app.setting
 !gradle-wrapper.jar
 
 bin/
+
+node_modules
+package-lock.json

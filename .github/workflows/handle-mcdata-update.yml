@@ -1,0 +1,15 @@
+name: handle-mcdata-update
+on:
+  repository_dispatch:
+    types: [mc-update]
+jobs:
+  update-mcdata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: npm install # install gh-helpers
+      - run: node .github/commands/bump.js ${{ github.event.client_payload.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_PASSWORD }}

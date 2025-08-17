@@ -4,18 +4,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.u9g.minecraftdatagenerator.util.DGU;
 import dev.u9g.minecraftdatagenerator.util.EmptyRenderBlockView;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.FoliageColors;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.FoliageColor;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RedStoneWireBlock;
 
 import java.util.*;
 
@@ -24,7 +23,7 @@ public class TintsDataGenerator implements IDataGenerator {
         BiomeTintColors colors = new BiomeTintColors();
 
         biomeRegistry.forEach(biome -> {
-            int biomeGrassColor = biome.getGrassColorAt(0.0, 0.0);
+            int biomeGrassColor = biome.getGrassColor(0.0, 0.0);
             int biomeFoliageColor = biome.getFoliageColor();
             int biomeWaterColor = biome.getWaterColor();
 
@@ -38,9 +37,9 @@ public class TintsDataGenerator implements IDataGenerator {
     public static Map<Integer, Integer> generateRedstoneTintColors() {
         Map<Integer, Integer> resultColors = new LinkedHashMap<>();
 
-        for (int redstoneLevel : RedstoneWireBlock.POWER.getValues()) {
+        for (int redstoneLevel : RedStoneWireBlock.POWER.getPossibleValues()) {
             // Remove the unintended alpha channel from the redstone tint color
-            int color = removeAlphaChannel(RedstoneWireBlock.getWireColor(redstoneLevel));
+            int color = removeAlphaChannel(RedStoneWireBlock.getColorForPower(redstoneLevel));
             resultColors.put(redstoneLevel, color);
         }
         return resultColors;
@@ -50,18 +49,18 @@ public class TintsDataGenerator implements IDataGenerator {
         float r = (float) (color >> 16 & 0xFF) / 255;
         float g = (float) (color >> 8 & 0xFF) / 255;
         float b = (float) (color & 0xFF) / 255;
-        return ColorHelper.fromFloats(0, r, g, b);
+        return ((int)(r * 255) << 16) | ((int)(g * 255) << 8) | (int)(b * 255);
     }
 
     private static int getBlockColor(Block block) {
-        return BlockColors.create().getColor(block.getDefaultState(), EmptyRenderBlockView.INSTANCE, BlockPos.ORIGIN, 0xFFFFFF);
+        return BlockColors.createDefault().getColor(block.defaultBlockState(), EmptyRenderBlockView.INSTANCE, BlockPos.ZERO, 0xFFFFFF);
     }
 
     public static Map<Block, Integer> generateConstantTintColors() {
         Map<Block, Integer> resultColors = new LinkedHashMap<>();
 
-        resultColors.put(Blocks.BIRCH_LEAVES, FoliageColors.BIRCH);
-        resultColors.put(Blocks.SPRUCE_LEAVES, FoliageColors.SPRUCE);
+        resultColors.put(Blocks.BIRCH_LEAVES, FoliageColor.FOLIAGE_BIRCH);
+        resultColors.put(Blocks.SPRUCE_LEAVES, FoliageColor.FOLIAGE_EVERGREEN);
 
         resultColors.put(Blocks.LILY_PAD, getBlockColor(Blocks.LILY_PAD));
         resultColors.put(Blocks.ATTACHED_MELON_STEM, getBlockColor(Blocks.ATTACHED_MELON_STEM));
@@ -81,7 +80,7 @@ public class TintsDataGenerator implements IDataGenerator {
 
             JsonArray keysArray = new JsonArray();
             for (Biome biome : entry.getValue()) {
-                Identifier registryKey = biomeRegistry.getKey(biome).orElseThrow().getValue();
+                ResourceLocation registryKey = biomeRegistry.getKey(biome);
                 keysArray.add(registryKey.getPath());
             }
 
@@ -119,7 +118,7 @@ public class TintsDataGenerator implements IDataGenerator {
             JsonObject entryObject = new JsonObject();
 
             JsonArray keysArray = new JsonArray();
-            Identifier registryKey = blockRegistry.getKey(entry.getKey()).orElseThrow().getValue();
+            ResourceLocation registryKey = blockRegistry.getKey(entry.getKey());
             keysArray.add(registryKey.getPath());
 
             entryObject.add("keys", keysArray);
@@ -139,9 +138,9 @@ public class TintsDataGenerator implements IDataGenerator {
 
     @Override
     public JsonObject generateDataJson() {
-        DynamicRegistryManager registryManager = DGU.getWorld().getRegistryManager();
-        Registry<Biome> biomeRegistry = registryManager.getOrThrow(RegistryKeys.BIOME);
-        Registry<Block> blockRegistry = registryManager.getOrThrow(RegistryKeys.BLOCK);
+        RegistryAccess registryManager = DGU.getWorld().registryAccess();
+        Registry<Biome> biomeRegistry = registryManager.lookupOrThrow(Registries.BIOME);
+        Registry<Block> blockRegistry = registryManager.lookupOrThrow(Registries.BLOCK);
 
         BiomeTintColors biomeTintColors = generateBiomeTintColors(biomeRegistry);
         Map<Integer, Integer> redstoneColors = generateRedstoneTintColors();

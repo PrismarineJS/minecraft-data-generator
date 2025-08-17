@@ -5,14 +5,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.u9g.minecraftdatagenerator.util.DGU;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.EmptyBlockView;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.*;
 
@@ -25,7 +25,7 @@ public class BlockCollisionShapesDataGenerator implements IDataGenerator {
 
     @Override
     public JsonObject generateDataJson() {
-        Registry<Block> blockRegistry = DGU.getWorld().getRegistryManager().getOrThrow(RegistryKeys.BLOCK);
+        Registry<Block> blockRegistry = DGU.getWorld().registryAccess().lookupOrThrow(Registries.BLOCK);
         BlockShapesCache blockShapesCache = new BlockShapesCache();
 
         blockRegistry.forEach(blockShapesCache::processBlock);
@@ -44,11 +44,11 @@ public class BlockCollisionShapesDataGenerator implements IDataGenerator {
         private int lastCollisionShapeId = 0;
 
         public void processBlock(Block block) {
-            List<BlockState> blockStates = block.getStateManager().getStates();
+            List<BlockState> blockStates = block.getStateDefinition().getPossibleStates();
             List<Integer> blockCollisionShapes = new ArrayList<>();
 
             for (BlockState blockState : blockStates) {
-                VoxelShape blockShape = blockState.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+                VoxelShape blockShape = blockState.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
                 Integer blockShapeIndex = uniqueBlockShapes.get(blockShape);
 
                 if (blockShapeIndex == null) {
@@ -77,7 +77,7 @@ public class BlockCollisionShapesDataGenerator implements IDataGenerator {
                     }
                 }
 
-                Identifier registryKey = blockRegistry.getKey(entry.getKey()).orElseThrow().getValue();
+                ResourceLocation registryKey = blockRegistry.getKey(entry.getKey());
                 resultObject.add(registryKey.getPath(), blockCollision);
             }
 
@@ -89,7 +89,7 @@ public class BlockCollisionShapesDataGenerator implements IDataGenerator {
 
             for (var entry : uniqueBlockShapes.entrySet()) {
                 JsonArray boxesArray = new JsonArray();
-                entry.getKey().forEachBox((x1, y1, z1, x2, y2, z2) -> {
+                entry.getKey().forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
                     JsonArray oneBoxJsonArray = new JsonArray();
 
                     oneBoxJsonArray.add(x1);
