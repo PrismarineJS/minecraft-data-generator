@@ -1,0 +1,15 @@
+name: handle-mcdata-update
+on:
+  repository_dispatch:
+    types: [mc-update]
+jobs:
+  update-mcdata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Update minecraft data
+        run: 'cd minecraft-data/ && git fetch --all --tags && git checkout ${{ github.event.client_payload.tag }}'
+      - run: npm install # install gh-helpers
+      - run: node .github/commands/bump.js ${{ github.event.client_payload.tag }}

@@ -31,10 +31,10 @@ Generally, our automated PR system will automatically create a new PR for a new 
 
 To add a new version manually, run
 ```
-node tools/newVersion.js <new-version-id>
+npm run bump <version>
 ```
 
-For example, `node tools/newVersion 1.21.6` will:
+For example, `npm run bump 1.21.6` will:
 * Create mc/1.21.6 as a copy of 1.21.5
 * Update mc/1.21.6/build.gradle for 1.21.6
 * Add the version to `versions.json`

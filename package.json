@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "fix": "standard --fix",
-    "version": "node tools/newVersion.js"
+    "bump": "node tools/newVersion.js"
   },
   "author": "",
   "license": "ISC",
