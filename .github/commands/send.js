@@ -9,7 +9,8 @@ module.exports = async ([mergedArtifactURL], helpers) => {
     branch: 'main',
     inputs: {
       versions: JSON.stringify(require('../../versions.json')),
-      mergedArtifactURL: mergedArtifactURL
+      mergedArtifactURL: mergedArtifactURL,
+      prNumber: process.env.PR_NUMBER
     }
   }
   console.log('Sending workflow dispatch', dispatchPayload)
