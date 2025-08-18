@@ -92,8 +92,19 @@ jobs:
           merge-multiple: true
 
       - name: Upload artifact
+        id: uploadMerged
         uses: actions/upload-artifact@v4
         with:
           name: merged-data
           path: artifacts/*
           if-no-files-found: error
+
+      - name: Sending artifacts to minecraft-data
+        # Check if PR starts with balloon marker
+        if: startsWith(github.event.pull_request.title, "🎈")
+        env:
+          ARTIFACT_URL: ${{ steps.uploadMerged.outputs.artifact-url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node .github/commands/send.js

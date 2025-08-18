@@ -6,6 +6,19 @@ const exec = (a, o) => {
   cp.execSync(a, { stdio: 'inherit', ...o })
 }
 
+const generateBody = (newVersion, issueNo, prNo) => `
+This automated PR sets up the relevant boilerplate for Minecraft version ${newVersion}.
+
+Links:
+- Issue: ${issueNo ? `https://github.com/PrismarineJS/minecraft-data/issues/${issueNo}` : 'N/A'}
+- PR: ${prNo ? `https://github.com/PrismarineJS/minecraft-data/pull/${prNo}` : 'N/A'}
+
+If the PR is passing, it will automatically send the generated artifacts to PrismarineJS/minecraft-data${prNo ? `#${prNo}` : ''}.
+
+If the PR is **not** passing:
+* You can help contribute to this PR by opening a PR against this <code>bump</code> branch instead of <code>main</code>.
+`
+
 module.exports = async ([newVersion], helpers) => {
   try {
     bump(newVersion)
@@ -17,8 +30,8 @@ module.exports = async ([newVersion], helpers) => {
     exec('git commit -m "Add version ' + newVersion + '"')
     exec('git push origin bump --force')
     const pr = await gh.createPullRequest(
-      'Add version ' + newVersion,
-      'This automated PR adds version ' + newVersion,
+      '🎈 Add version ' + newVersion, // special marker
+      generateBody(newVersion, process.env.MCDATA_ISSUE_NO, process.env.MCDATA_PULL_NO),
       'bump',
       'main'
     )
