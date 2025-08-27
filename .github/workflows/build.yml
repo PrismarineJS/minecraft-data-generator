@@ -109,7 +109,7 @@ jobs:
         if: startsWith(github.event.pull_request.title, env.MARKER)
         env:
           ARTIFACT_URL: ${{ steps.uploadMerged.outputs.artifact-url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_PASSWORD }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: node .github/commands/send.js
