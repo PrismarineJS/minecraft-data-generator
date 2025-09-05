@@ -6,7 +6,7 @@ module.exports = async ([mergedArtifactURL], helpers) => {
     owner: 'PrismarineJS',
     repo: 'minecraft-data',
     workflow: 'handle-mcpc-generator.yml',
-    branch: 'main',
+    branch: 'master',
     inputs: {
       versions: JSON.stringify(require('../../versions.json')),
       mergedArtifactURL: mergedArtifactURL,
