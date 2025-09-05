@@ -1,7 +1,8 @@
 # minecraft-data-generator
 
 This tool generates minecraft-data files based on a running a server on client classpath using a fabric mod.
-The supported versions can be read in the directory structure.
+The supported versions are enumerated in versions.json. 
+
 Every version has its own directory.
 
 ## Usage
@@ -25,7 +26,8 @@ You can then find the minecraft-data in the `mc/<version>/run/minecraft-data` di
 
 ## Adding a new version
 
-Generally, our automated PR system will automatically create a new PR for a new version, so you just have to clone the auto opened PR and continue work on it.
+Generally, our automated PR system will automatically create a new PR for a new version, 
+so you just have to clone the auto opened PR and continue work on it.
 
 ### Manual setup
 

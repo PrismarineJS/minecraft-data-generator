@@ -40,11 +40,11 @@ public class RecipeDataGenerator implements IDataGenerator {
                 generateShapedRecipe(registryManager, finalObj, sr, 0);
             } else if (recipe instanceof ShapelessRecipe sl) {
                 var ingredients = new JsonArray();
-                for (Object ingredientDisplay : sl.display()) {
-                    if (ingredientDisplay instanceof Ingredient ingredient) {
-                        if (ingredient.items().toList().isEmpty()) continue;
-                        ingredients.add(getRawIdFor(ingredient.items().toList().get(0).value()));
-                    }
+                for (Ingredient ingredient : sl.getIngredients()) {
+                    if (ingredient.isEmpty()) continue;
+                    var matchingList = ingredient.items().toList();
+                    if (matchingList.isEmpty()) continue;
+                    ingredients.add(getRawIdFor(matchingList.get(0).value()));
                 }
                 var rootRecipeObject = new JsonObject();
                 rootRecipeObject.add("ingredients", ingredients);
