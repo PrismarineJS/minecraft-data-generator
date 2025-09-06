@@ -23,7 +23,7 @@ const failOnError = process.env.FAIL_ON_ERROR === 'true'
 
 // Save some time by skipping old versions as we are not parallelizing builds
 const versions = require('../../versions.json')
-const SKIP_VERSIONS = versions.slice(0, versions.indexOf('1.21.3'))
+const SKIP_VERSIONS = versions.slice(0, -2) // all but last 2 versions
 
 async function main () {
 
