@@ -1,0 +1,76 @@
+# https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    name: Build and generate data (single-step loop via Node)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Set the permissions to the lowest permissions possible needed for your steps.
+    # Copilot will be given its own token for its operations.
+    permissions:
+      # If you want to clone the repository as part of your setup steps, for example to install dependencies, you'll need the `contents: read` permission. If you don't clone the repository in your setup steps, Copilot will do this for you automatically after the steps complete.
+      contents: write
+      actions: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          add-job-summary-as-pr-comment: on-failure
+
+      - name: Run Copilot setup script
+        id: sb
+        run: node .github/commands/setupCopilot.js
+        shell: bash
+
+      - name: Checkout latest mc code (external repo)
+        # If the external repo is public, the default token is fine.
+        # If it's private, create a personal access token with repo access and add it
+        # to this repo's secrets as EXTRA_REPO_TOKEN.
+        uses: actions/checkout@v4
+        with:
+          repository: extremeheat/extracted_minecraft_data
+          path: mc-source/${{ steps.sb.outputs.latest_version }}
+          ref: client${{ steps.sb.outputs.latest_version }}
+          fetch-depth: 1
+
+      - name: Checkout second latest mc code (external repo)
+        # If the external repo is public, the default token is fine.
+        # If it's private, create a personal access token with repo access and add it
+        # to this repo's secrets as EXTRA_REPO_TOKEN.
+        uses: actions/checkout@v4
+        with:
+          repository: extremeheat/extracted_minecraft_data
+          path: mc-source/${{ steps.sb.outputs.second_latest_version }}
+          ref: client${{ steps.sb.outputs.second_latest_version }}
+          fetch-depth: 1
+
+      - run: ls mc-source
+
+      - name: Write diff
+        # NOTE: this returns exit code 1 if there are differences
+        run: git diff --no-index ${{ steps.sb.outputs.second_latest_version }} ${{ steps.sb.outputs.latest_version }} > ${{ steps.sb.outputs.second_latest_version }}_to_${{ steps.sb.outputs.latest_version }}.diff
+        working-directory: mc-source
+        continue-on-error: true
