@@ -118,6 +118,7 @@ gradle-app.setting
 !gradle-wrapper.jar
 
 bin/
+mc-source/
 
 node_modules
 package-lock.json

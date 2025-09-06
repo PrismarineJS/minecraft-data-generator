@@ -61,10 +61,14 @@ async function main () {
 
   // Write outputs for downstream jobs, if GITHUB_OUTPUT available
   const ghOut = process.env.GITHUB_OUTPUT
+  const latestVersion = versions[versions.length - 1]
+  const secondLatestVersion = versions[versions.length - 2]
   if (ghOut) {
     try {
       fs.appendFileSync(ghOut, `success_versions=${JSON.stringify(successes)}\n`)
       fs.appendFileSync(ghOut, `failed_versions=${JSON.stringify(failures)}\n`)
+      fs.appendFileSync(ghOut, `latest_version=${JSON.stringify(latestVersion)}\n`)
+      fs.appendFileSync(ghOut, `second_latest_version=${JSON.stringify(secondLatestVersion)}\n`)
     } catch (e) {
       console.warn('Could not write to GITHUB_OUTPUT:', e && e.message)
     }
@@ -72,6 +76,8 @@ async function main () {
     console.log('GITHUB_OUTPUT not found; printing summaries to stdout instead.')
     console.log('success_versions=', JSON.stringify(successes))
     console.log('failed_versions=', JSON.stringify(failures))
+    console.log('latest_version=', JSON.stringify(latestVersion))
+    console.log('second_latest_version=', JSON.stringify(secondLatestVersion))
   }
 
   console.log('')
