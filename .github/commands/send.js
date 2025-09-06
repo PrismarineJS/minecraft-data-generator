@@ -9,7 +9,7 @@ module.exports = async ([mergedArtifactURL], helpers) => {
     branch: 'master',
     inputs: {
       versions: JSON.stringify(require('../../versions.json')),
-      mergedArtifactURL: mergedArtifactURL,
+      mergedArtifactURL,
       prNumber: process.env.PR_NUMBER
     }
   }

@@ -4,7 +4,7 @@
   "description": "This tool generates minecraft-data files based on a running a server on client classpath using a fabric mod. The supported versions can be read in the directory structure. Every version has its own directory.",
   "main": "index.js",
   "scripts": {
-    "fix": "standard --fix",
+    "fix": "standard --fix .github tools",
     "bump": "node tools/newVersion.js"
   },
   "author": "",
