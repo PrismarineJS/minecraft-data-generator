@@ -67,8 +67,8 @@ async function main () {
     try {
       fs.appendFileSync(ghOut, `success_versions=${JSON.stringify(successes)}\n`)
       fs.appendFileSync(ghOut, `failed_versions=${JSON.stringify(failures)}\n`)
-      fs.appendFileSync(ghOut, `latest_version=${JSON.stringify(latestVersion)}\n`)
-      fs.appendFileSync(ghOut, `second_latest_version=${JSON.stringify(secondLatestVersion)}\n`)
+      fs.appendFileSync(ghOut, `latest_version=${latestVersion}\n`)
+      fs.appendFileSync(ghOut, `second_latest_version=${secondLatestVersion}\n`)
     } catch (e) {
       console.warn('Could not write to GITHUB_OUTPUT:', e && e.message)
     }
