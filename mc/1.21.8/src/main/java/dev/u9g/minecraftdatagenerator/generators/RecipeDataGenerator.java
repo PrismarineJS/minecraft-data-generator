@@ -13,6 +13,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
+import net.minecraft.util.context.ContextMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +44,13 @@ public class RecipeDataGenerator implements IDataGenerator {
                 generateShapedRecipe(registryManager, finalObj, sr, 0);
             } else if (recipe instanceof ShapelessRecipe sl) {
                 var ingredients = new JsonArray();
-                for (Object ingredientDisplay : sl.display()) {
-                    if (ingredientDisplay instanceof Ingredient ingredient) {
-                        if (ingredient.items().toList().isEmpty()) continue;
-                        ingredients.add(getRawIdFor(ingredient.items().toList().get(0).value()));
+                var displays = sl.display();
+                if (!displays.isEmpty() && displays.get(0) instanceof ShapelessCraftingRecipeDisplay shapelessDisplay) {
+                    for (SlotDisplay slotDisplay : shapelessDisplay.ingredients()) {
+                        var itemStack = slotDisplay.resolveForFirstStack(SlotDisplayContext.fromLevel(DGU.getWorld()));
+                        if (!itemStack.isEmpty()) {
+                            ingredients.add(getRawIdFor(itemStack.getItem()));
+                        }
                     }
                 }
                 var rootRecipeObject = new JsonObject();

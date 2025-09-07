@@ -104,6 +104,8 @@ jobs:
           path: artifacts/*
           if-no-files-found: error
 
+      - run: cat "$GITHUB_EVENT_PATH"
+
       - name: Sending artifacts to minecraft-data
         # Check if PR starts with marker
         if: startsWith(github.event.pull_request.title, env.MARKER)
