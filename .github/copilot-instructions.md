@@ -12,7 +12,7 @@ Generated data ends up under `mc/<version>/run/server/minecraft-data` in the rep
 - mc/                       — per-Minecraft-version directories of OUR extractor code (e.g. `mc/1.21.8`)
 - versions.json             — canonical JSON array of versions that are supported (i.e. there are folders in mc/ for it)
 - mc-source/<version>       — (External) minecraft java edition code for relevant version with Mojang mappings that you can reference for changes.
-    * we store the last 2 most recent versions in the folder to save space, but if you need more versions you can do `cd mc-source/1.21.3 && git fetch origin client1.21.3 && git switch client1.21.3` (as these folders are a repo cloned with specific branches)
+    * we store the last 2 most recent versions in the folder to save space, but if you need more versions you can do `cd mc-source && git ls-remote 'https://github.com/extremeheat/extracted_minecraft_data' && git clone 'https://github.com/extremeheat/extracted_minecraft_data' --depth 1 -b client1.20.3 1.20.3 && cd 1.20.3`
     * there is a .diff file in mc-source/ like `1.21.7_to_1.21.8.diff` that contains result of `git diff --no-index old new` that you can reference for changes (note it's typically large)
     * Since our generator is using Mojang mappings, the API naming is the same.
 - README.md — info how to set up
