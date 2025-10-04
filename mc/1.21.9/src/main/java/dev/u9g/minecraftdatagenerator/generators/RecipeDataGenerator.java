@@ -9,6 +9,7 @@ import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -16,7 +17,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
-import net.minecraft.util.context.ContextMap;
 
 import java.util.ArrayList;
 import java.util.List;

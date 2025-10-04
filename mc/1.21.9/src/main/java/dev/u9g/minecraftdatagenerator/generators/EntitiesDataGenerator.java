@@ -57,9 +57,9 @@ public class EntitiesDataGenerator implements IDataGenerator {
             throw new Error("Entity was null after trying to create a: " + DGU.translateText(entityType.getDescriptionId()));
         entity.discard();
         String packageName = entity.getClass().getPackageName();
-        
+
         // Use a more flexible approach to handle sub-packages
-        if (packageName.equals("net.minecraft.world.entity.decoration") || 
+        if (packageName.equals("net.minecraft.world.entity.decoration") ||
             packageName.startsWith("net.minecraft.world.entity.decoration.")) {
             return "Immobile";
         } else if (packageName.equals("net.minecraft.world.entity.boss") ||
