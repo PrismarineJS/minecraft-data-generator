@@ -8,7 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -28,7 +28,7 @@ public class ItemsDataGenerator implements IDataGenerator {
 
     public static JsonObject generateItem(Registry<Item> itemRegistry, Item item) {
         JsonObject itemDesc = new JsonObject();
-        ResourceLocation registryKey = itemRegistry.getKey(item);
+        Identifier registryKey = itemRegistry.getKey(item);
 
         itemDesc.addProperty("id", itemRegistry.getId(item));
         itemDesc.addProperty("name", registryKey.getPath());
@@ -53,7 +53,7 @@ public class ItemsDataGenerator implements IDataGenerator {
 
             JsonArray fixedWithArray = new JsonArray();
             for (Item repairWithItem : repairWithItems) {
-                ResourceLocation repairWithName = itemRegistry.getKey(repairWithItem);
+                Identifier repairWithName = itemRegistry.getKey(repairWithItem);
                 fixedWithArray.add(repairWithName.getPath());
             }
             if (fixedWithArray.size() > 0) {

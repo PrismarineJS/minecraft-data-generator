@@ -17,7 +17,7 @@
  */
 package dev.u9g.minecraftdatagenerator.mixin;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.flag.FeatureFlags;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,6 +31,6 @@ import java.util.List;
 public class DataPackSettingsMixin {
   @Inject(method = "getSelectedIds", at = @At("HEAD"), cancellable = true)
   public void getEnabled(CallbackInfoReturnable<List<String>> cir) {
-    cir.setReturnValue(FeatureFlags.REGISTRY.toNames(FeatureFlags.REGISTRY.allFlags()).stream().map(ResourceLocation::getPath).toList());
+    cir.setReturnValue(FeatureFlags.REGISTRY.toNames(FeatureFlags.REGISTRY.allFlags()).stream().map(Identifier::getPath).toList());
   }
 }
