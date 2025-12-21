@@ -6,8 +6,11 @@ import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.biome.OverworldBiomes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.world.attribute.EnvironmentAttributeMap;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.level.biome.Biome;
 
 public class BiomesDataGenerator implements IDataGenerator {
@@ -75,6 +78,14 @@ public class BiomesDataGenerator implements IDataGenerator {
         }
     }
 
+    public static Integer getSkyColor(Biome biome, String dimension){
+        EnvironmentAttributeMap.Entry<Integer, ?> skyColorEntry = biome.getAttributes().get(EnvironmentAttributes.SKY_COLOR);
+        if (skyColorEntry != null) {
+            return (Integer) skyColorEntry.argument();
+        }
+        return dimension.equals("end") ? 0 : OverworldBiomes.calculateSkyColor(biome.getBaseTemperature());
+    }
+
     public static JsonObject generateBiomeInfo(Registry<Biome> registry, Biome biome) {
         JsonObject biomeDesc = new JsonObject();
         Identifier registryKey = registry.getKey(biome);
@@ -90,7 +101,7 @@ public class BiomesDataGenerator implements IDataGenerator {
         //biomeDesc.addProperty("depth", biome.getDepth()); - Doesn't exist anymore in minecraft source
         biomeDesc.addProperty("dimension", dimension);
         biomeDesc.addProperty("displayName", DGU.translateText(localizationKey));
-        //biomeDesc.addProperty("color", biome.getSkyColor()); // - removed in 1.21.11
+        biomeDesc.addProperty("color", getSkyColor(biome, dimension));
         //biomeDesc.addProperty("rainfall", biome.getDownfall());// - removed in 1.19.4
 
         return biomeDesc;
