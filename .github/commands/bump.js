@@ -20,6 +20,12 @@ If the PR is **not** passing:
 `
 
 module.exports = async ([newVersion], helpers) => {
+  const existingPr = await gh.findPullRequest({ titleIncludes: '🎈', status: 'open' })
+  if (existingPr) {
+    console.warn('There is already an open PR; cannot create a new one until that one is closed.', existingPr)
+    await gh.comment(existingPr.number, `Cannot open new PR for version '${newVersion}' as this one is already open. Maintainers: Once this is merged, please manually re-run the update workflow for the new version (${newVersion}).`)
+    return
+  }
   try {
     bump(newVersion)
     try { exec('git branch -D bump') } catch (e) { console.log('No existing branch to delete; ok.') }
