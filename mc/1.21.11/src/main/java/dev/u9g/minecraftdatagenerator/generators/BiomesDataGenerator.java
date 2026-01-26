@@ -94,7 +94,10 @@ public class BiomesDataGenerator implements IDataGenerator {
         biomeDesc.addProperty("displayName", DGU.translateText(localizationKey));
         // In 1.21.11, sky color moved to EnvironmentAttributes
         EnvironmentAttributeMap.Entry<Integer, ?> skyColorEntry = biome.getAttributes().get(EnvironmentAttributes.SKY_COLOR);
-        int skyColor = skyColorEntry != null ? (Integer) skyColorEntry.argument() : 0;
+        int skyColor = 0;
+        if (skyColorEntry != null && skyColorEntry.argument() instanceof Integer) {
+            skyColor = (Integer) skyColorEntry.argument();
+        }
         biomeDesc.addProperty("color", skyColor);
         //biomeDesc.addProperty("rainfall", biome.getDownfall());// - removed in 1.19.4
 
