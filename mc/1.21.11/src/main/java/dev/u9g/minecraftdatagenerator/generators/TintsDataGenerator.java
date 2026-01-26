@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -80,7 +80,7 @@ public class TintsDataGenerator implements IDataGenerator {
 
             JsonArray keysArray = new JsonArray();
             for (Biome biome : entry.getValue()) {
-                ResourceLocation registryKey = biomeRegistry.getKey(biome);
+                Identifier registryKey = biomeRegistry.getKey(biome);
                 keysArray.add(registryKey.getPath());
             }
 
@@ -118,7 +118,7 @@ public class TintsDataGenerator implements IDataGenerator {
             JsonObject entryObject = new JsonObject();
 
             JsonArray keysArray = new JsonArray();
-            ResourceLocation registryKey = blockRegistry.getKey(entry.getKey());
+            Identifier registryKey = blockRegistry.getKey(entry.getKey());
             keysArray.add(registryKey.getPath());
 
             entryObject.add("keys", keysArray);

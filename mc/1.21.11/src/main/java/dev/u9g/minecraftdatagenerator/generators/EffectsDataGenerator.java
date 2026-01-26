@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class EffectsDataGenerator implements IDataGenerator {
     public static JsonObject generateEffect(Registry<MobEffect> registry, MobEffect mobEffect) {
         JsonObject effectDesc = new JsonObject();
-        ResourceLocation registryKey = registry.getKey(mobEffect);
+        Identifier registryKey = registry.getKey(mobEffect);
 
         effectDesc.addProperty("id", registry.getId(mobEffect));
         if (mobEffect == MobEffects.UNLUCK.value()) {

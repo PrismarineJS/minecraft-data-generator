@@ -6,12 +6,12 @@ import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ParticlesDataGenerator implements IDataGenerator {
     public static JsonObject generateParticleType(Registry<ParticleType<?>> registry, ParticleType<?> particleType) {
         JsonObject effectDesc = new JsonObject();
-        ResourceLocation registryKey = registry.getKey(particleType);
+        Identifier registryKey = registry.getKey(particleType);
 
         effectDesc.addProperty("id", registry.getId(particleType));
         effectDesc.addProperty("name", registryKey.getPath());
