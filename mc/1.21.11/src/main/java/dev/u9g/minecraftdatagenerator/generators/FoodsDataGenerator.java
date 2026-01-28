@@ -6,7 +6,7 @@ import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 
@@ -15,7 +15,7 @@ import java.util.Objects;
 public class FoodsDataGenerator implements IDataGenerator {
     public static JsonObject generateFoodDescriptor(Registry<Item> registry, Item foodItem) {
         JsonObject foodDesc = new JsonObject();
-        ResourceLocation registryKey = registry.getKey(foodItem);
+        Identifier registryKey = registry.getKey(foodItem);
 
         foodDesc.addProperty("id", registry.getId(foodItem));
         foodDesc.addProperty("name", registryKey.getPath());

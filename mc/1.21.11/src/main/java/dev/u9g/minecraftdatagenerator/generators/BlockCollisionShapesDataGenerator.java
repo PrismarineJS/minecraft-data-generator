@@ -8,7 +8,7 @@ import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -77,7 +77,7 @@ public class BlockCollisionShapesDataGenerator implements IDataGenerator {
                     }
                 }
 
-                ResourceLocation registryKey = blockRegistry.getKey(entry.getKey());
+                Identifier registryKey = blockRegistry.getKey(entry.getKey());
                 resultObject.add(registryKey.getPath(), blockCollision);
             }
 

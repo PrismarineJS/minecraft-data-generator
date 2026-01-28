@@ -7,7 +7,7 @@ import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
@@ -124,7 +124,7 @@ public class BlocksDataGenerator implements IDataGenerator {
 
         List<BlockState> blockStates = block.getStateDefinition().getPossibleStates();
         BlockState defaultState = block.defaultBlockState();
-        ResourceLocation registryKey = blockRegistry.getKey(block);
+        Identifier registryKey = blockRegistry.getKey(block);
         String localizationKey = block.getDescriptionId();
         List<Item> effectiveTools = getItemsEffectiveForBlock(defaultState);
 

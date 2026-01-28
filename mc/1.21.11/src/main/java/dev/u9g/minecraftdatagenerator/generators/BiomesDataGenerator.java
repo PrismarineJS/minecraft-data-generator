@@ -6,8 +6,10 @@ import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.world.attribute.EnvironmentAttributeMap;
 import net.minecraft.world.level.biome.Biome;
 
 public class BiomesDataGenerator implements IDataGenerator {
@@ -77,7 +79,7 @@ public class BiomesDataGenerator implements IDataGenerator {
 
     public static JsonObject generateBiomeInfo(Registry<Biome> registry, Biome biome) {
         JsonObject biomeDesc = new JsonObject();
-        ResourceLocation registryKey = registry.getKey(biome);
+        Identifier registryKey = registry.getKey(biome);
         String localizationKey = String.format("biome.%s.%s", registryKey.getNamespace(), registryKey.getPath());
         String name = registryKey.getPath();
         biomeDesc.addProperty("id", registry.getId(biome));
@@ -90,7 +92,13 @@ public class BiomesDataGenerator implements IDataGenerator {
         //biomeDesc.addProperty("depth", biome.getDepth()); - Doesn't exist anymore in minecraft source
         biomeDesc.addProperty("dimension", dimension);
         biomeDesc.addProperty("displayName", DGU.translateText(localizationKey));
-        biomeDesc.addProperty("color", biome.getSkyColor());
+        // In 1.21.11, sky color moved to EnvironmentAttributes
+        EnvironmentAttributeMap.Entry<Integer, ?> skyColorEntry = biome.getAttributes().get(EnvironmentAttributes.SKY_COLOR);
+        int skyColor = 0;
+        if (skyColorEntry != null && skyColorEntry.argument() instanceof Integer) {
+            skyColor = (Integer) skyColorEntry.argument();
+        }
+        biomeDesc.addProperty("color", skyColor);
         //biomeDesc.addProperty("rainfall", biome.getDownfall());// - removed in 1.19.4
 
         return biomeDesc;

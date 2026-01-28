@@ -7,7 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -24,7 +24,7 @@ public class EnchantmentsDataGenerator implements IDataGenerator {
         return DGU.getWorld()
                 .registryAccess()
                 .lookupOrThrow(Registries.ENCHANTMENT)
-                .getOrThrow(TagKey.create(Registries.ENCHANTMENT, ResourceLocation.parse(tag)))
+                .getOrThrow(TagKey.create(Registries.ENCHANTMENT, Identifier.parse(tag)))
                 .stream()
                 .anyMatch(enchantmentRegistryEntry -> enchantmentRegistryEntry.value() == enchantment);
     }
@@ -52,7 +52,7 @@ public class EnchantmentsDataGenerator implements IDataGenerator {
 
     public static JsonObject generateEnchantment(Registry<Enchantment> registry, Enchantment enchantment) {
         JsonObject enchantmentDesc = new JsonObject();
-        ResourceLocation registryKey = registry.getKey(enchantment);
+        Identifier registryKey = registry.getKey(enchantment);
 
         enchantmentDesc.addProperty("id", registry.getId(enchantment));
         enchantmentDesc.addProperty("name", registryKey.getPath());
@@ -77,7 +77,7 @@ public class EnchantmentsDataGenerator implements IDataGenerator {
 
         JsonArray excludes = new JsonArray();
         for (Enchantment excludedEnchantment : incompatibleEnchantments) {
-            ResourceLocation otherKey = registry.getKey(excludedEnchantment);
+            Identifier otherKey = registry.getKey(excludedEnchantment);
             excludes.add(otherKey.getPath());
         }
         enchantmentDesc.add("exclude", excludes);

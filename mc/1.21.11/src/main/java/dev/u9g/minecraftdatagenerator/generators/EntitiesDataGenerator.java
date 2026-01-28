@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
@@ -15,14 +15,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ambient.AmbientCreature;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.WaterAnimal;
+
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.projectile.Projectile;
 
 public class EntitiesDataGenerator implements IDataGenerator {
     public static JsonObject generateEntity(Registry<EntityType<?>> entityRegistry, EntityType<?> entityType) {
         JsonObject entityDesc = new JsonObject();
-        ResourceLocation registryKey = entityRegistry.getKey(entityType);
+        Identifier registryKey = entityRegistry.getKey(entityType);
         int entityRawId = entityRegistry.getId(entityType);
 
         entityDesc.addProperty("id", entityRawId);
@@ -89,9 +89,7 @@ public class EntitiesDataGenerator implements IDataGenerator {
     //by the Entity class hierarchy (which has some weirdness too by the way)
     private static String getEntityTypeForClass(Class<? extends Entity> entityClass) {
         //Top-level classifications
-        if (WaterAnimal.class.isAssignableFrom(entityClass)) {
-            return "water_creature";
-        }
+        // Note: WaterAnimal was removed in 1.21.11, water creatures now use Animal directly
         if (Animal.class.isAssignableFrom(entityClass)) {
             return "animal";
         }
