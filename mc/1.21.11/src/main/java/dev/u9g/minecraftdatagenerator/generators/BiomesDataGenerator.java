@@ -96,7 +96,8 @@ public class BiomesDataGenerator implements IDataGenerator {
         EnvironmentAttributeMap.Entry<Integer, ?> skyColorEntry = biome.getAttributes().get(EnvironmentAttributes.SKY_COLOR);
         int skyColor = 0;
         if (skyColorEntry != null && skyColorEntry.argument() instanceof Integer) {
-            skyColor = (Integer) skyColorEntry.argument();
+            // convert to RGB
+            skyColor = (Integer) skyColorEntry.argument() & 0xFFFFFF;
         }
         biomeDesc.addProperty("color", skyColor);
         //biomeDesc.addProperty("rainfall", biome.getDownfall());// - removed in 1.19.4
