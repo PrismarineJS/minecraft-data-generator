@@ -15,7 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ambient.AmbientCreature;
 import net.minecraft.world.entity.animal.Animal;
-
+import net.minecraft.world.entity.animal.fish.WaterAnimal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.projectile.Projectile;
 
@@ -89,7 +89,9 @@ public class EntitiesDataGenerator implements IDataGenerator {
     //by the Entity class hierarchy (which has some weirdness too by the way)
     private static String getEntityTypeForClass(Class<? extends Entity> entityClass) {
         //Top-level classifications
-        // Note: WaterAnimal was removed in 1.21.11, water creatures now use Animal directly
+        if (WaterAnimal.class.isAssignableFrom(entityClass)) {
+            return "water_creature";
+        }
         if (Animal.class.isAssignableFrom(entityClass)) {
             return "animal";
         }
