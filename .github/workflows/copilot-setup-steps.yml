@@ -71,6 +71,6 @@ jobs:
 
       - name: Write diff
         # NOTE: this returns exit code 1 if there are differences
-        run: git diff --no-index ${{ steps.sb.outputs.second_latest_version }} ${{ steps.sb.outputs.latest_version }} > ${{ steps.sb.outputs.second_latest_version }}_to_${{ steps.sb.outputs.latest_version }}.diff
+        run: git diff --no-index -M50% -l2000 ${{ steps.sb.outputs.second_latest_version }} ${{ steps.sb.outputs.latest_version }} > ${{ steps.sb.outputs.second_latest_version }}_to_${{ steps.sb.outputs.latest_version }}.diff
         working-directory: mc-source
         continue-on-error: true

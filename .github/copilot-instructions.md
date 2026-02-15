@@ -13,7 +13,7 @@ Generated data ends up under `mc/<version>/run/server/minecraft-data` in the rep
 - versions.json             — canonical JSON array of versions that are supported (i.e. there are folders in mc/ for it)
 - mc-source/<version>       — (External) minecraft java edition code for relevant version with Mojang mappings that you can reference for changes.
     * we store the last 2 most recent versions in the folder to save space, but if you need more versions you can do `cd mc-source && git ls-remote 'https://github.com/extremeheat/extracted_minecraft_data' && git clone 'https://github.com/extremeheat/extracted_minecraft_data' --depth 1 -b client1.20.3 1.20.3 && cd 1.20.3`
-    * there is a .diff file in mc-source/ like `1.21.7_to_1.21.8.diff` that contains result of `git diff --no-index old new` that you can reference for changes (note it's typically large)
+    * there is a .diff file in mc-source/ like `1.21.7_to_1.21.8.diff` that contains result of `git diff --no-index -M50% -l2000 old new` that you can reference for changes (note it's typically large)
     * Since our generator is using Mojang mappings, the API naming is the same.
 - README.md — info how to set up
 
@@ -30,9 +30,17 @@ and figure out how to replicate, debug and fix the logical issues in data genera
 
 ## Troubleshooting
 
-Simply iterating over errors one by one is a good way to fix most issues. Inside mc-source/ you are provided the latest
-code for the latest minecraft versions you can reference to investigate any code changes that we may need to accomodate in our
-generator code.
+Simply iterating over errors one by one is a good way to fix most issues. The `mc-source/` directory contains the two
+most recent Minecraft versions (e.g. `mc-source/1.21.10/` and `mc-source/1.21.11/`) plus a diff file between them.
+When searching for code, always target a specific version directory (e.g. search in `mc-source/1.21.11/` not `mc-source/`)
+to avoid clutter and confusion.
+
+Importantly, before assuming a class/method was removed, check the diff file for renames first. Renames/moves appear as:
+```
+rename from net/minecraft/world/entity/animal/WaterAnimal.java
+rename to net/minecraft/world/entity/animal/fish/WaterAnimal.java
+```
+If not found in the diff (rename detection has a 2000 file limit), search the specific version directory to locate the class.
 
 Sometimes, some APIs might change inside the mc code and make the data that the current code extracts no longer
 valid. In these cases, do your best to conform the new data to the old structure even if it feels wrong. If you
@@ -44,8 +52,8 @@ You can propose a new schema to the user (so that the relevant changes can be ma
 - Reproduce the problem locally inside the container and run the generator task.
   - Example run command: `./gradlew :mc:1.21.6:runServer --stacktrace`
   - See if the problem exists on an older version -- if so inform the user, otherwise compare logs and code
-- Inspect diffs in `mc-source/` to correlate Mojang API changes.
-  - See mc-source/
+- Inspect diffs in `mc-source/` for API changes, renames, and moves
+- Search the specific version directory (e.g. `mc-source/1.21.11/`) to locate moved/renamed classes
 - Validate generated output at `mc/<version>/run/server/minecraft-data` to make sure all files are there
 
 ---
