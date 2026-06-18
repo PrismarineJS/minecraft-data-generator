@@ -53,7 +53,7 @@ public class TintsDataGenerator implements IDataGenerator {
     }
 
     private static int getBlockColor(Block block) {
-        return BlockColors.createDefault().getColor(block.defaultBlockState(), EmptyRenderBlockView.INSTANCE, BlockPos.ZERO, 0xFFFFFF);
+        return BlockColors.createDefault().getTintSource(block.defaultBlockState(), 0).colorInWorld(block.defaultBlockState(), EmptyRenderBlockView.INSTANCE, BlockPos.ZERO);
     }
 
     public static Map<Block, Integer> generateConstantTintColors() {

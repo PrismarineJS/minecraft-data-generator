@@ -146,7 +146,7 @@ public class BlocksDataGenerator implements IDataGenerator {
 
         blockDesc.addProperty("transparent", !defaultState.canOcclude());
         blockDesc.addProperty("emitLight", defaultState.getLightEmission());
-        blockDesc.addProperty("filterLight", defaultState.getLightBlock());
+        blockDesc.addProperty("filterLight", defaultState.getLightDampening());
 
         blockDesc.addProperty("defaultState", Block.getId(defaultState));
         blockDesc.addProperty("minStateId", Block.getId(blockStates.getFirst()));

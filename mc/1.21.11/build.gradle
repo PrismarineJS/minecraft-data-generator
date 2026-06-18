@@ -9,8 +9,9 @@ unimined.minecraft {
 
     mappings {
         mojmap()
-        
-        devFallbackNamespace "mojmap"
+
+        devNamespace "mojmap"
+        devFallbackNamespace "intermediary"
     }
 
     customPatcher(new CustomOfficialFabricMinecraftTransformer(project, delegate as MinecraftProvider)) {

@@ -56,10 +56,10 @@ public class RecipeDataGenerator implements IDataGenerator {
                 var rootRecipeObject = new JsonObject();
                 rootRecipeObject.add("ingredients", ingredients);
                 var resultObject = new JsonObject();
-                resultObject.addProperty("id", getRawIdFor(sl.assemble(CraftingInput.EMPTY, registryManager).getItem()));
-                resultObject.addProperty("count", sl.assemble(CraftingInput.EMPTY, registryManager).getCount());
+                resultObject.addProperty("id", getRawIdFor(sl.assemble(CraftingInput.EMPTY).getItem()));
+                resultObject.addProperty("count", sl.assemble(CraftingInput.EMPTY).getCount());
                 rootRecipeObject.add("result", resultObject);
-                recipes.put(getRawIdFor(sl.assemble(CraftingInput.EMPTY, registryManager).getItem()), rootRecipeObject);
+                recipes.put(getRawIdFor(sl.assemble(CraftingInput.EMPTY).getItem()), rootRecipeObject);
             }
         }
         recipes.forEach((a, b) -> {
@@ -118,11 +118,11 @@ public class RecipeDataGenerator implements IDataGenerator {
         finalRecipe.add("inShape", inShape);
 
         var resultObject = new JsonObject();
-        resultObject.addProperty("id", getRawIdFor(sr.assemble(CraftingInput.EMPTY, registryManager).getItem()));
-        resultObject.addProperty("count", sr.assemble(CraftingInput.EMPTY, registryManager).getCount());
+        resultObject.addProperty("id", getRawIdFor(sr.assemble(CraftingInput.EMPTY).getItem()));
+        resultObject.addProperty("count", sr.assemble(CraftingInput.EMPTY).getCount());
         finalRecipe.add("result", resultObject);
 
-        String id = ((Integer) getRawIdFor(sr.assemble(CraftingInput.EMPTY, registryManager).getItem())).toString();
+        String id = ((Integer) getRawIdFor(sr.assemble(CraftingInput.EMPTY).getItem())).toString();
 
         if (!finalObj.has(id)) {
             finalObj.add(id, new JsonArray());
