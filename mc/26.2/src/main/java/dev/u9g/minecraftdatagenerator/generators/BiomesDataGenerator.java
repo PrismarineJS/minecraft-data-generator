@@ -8,8 +8,8 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BiomeTags;
-import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.attribute.EnvironmentAttributeMap;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.level.biome.Biome;
 
 public class BiomesDataGenerator implements IDataGenerator {
