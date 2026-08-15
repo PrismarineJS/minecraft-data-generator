@@ -1,11 +1,11 @@
 package dev.u9g.minecraftdatagenerator.util;
 
 import dev.u9g.minecraftdatagenerator.util.DGU;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
