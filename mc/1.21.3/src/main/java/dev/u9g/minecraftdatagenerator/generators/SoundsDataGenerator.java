@@ -9,7 +9,10 @@ public class SoundsDataGenerator implements IDataGenerator {
     public static JsonObject generateSound(SoundEvent soundEvent) {
         JsonObject soundDesc = new JsonObject();
 
-        soundDesc.addProperty("id", Registries.SOUND_EVENT.getRawId(soundEvent) + 1); // the plus 1 is required for 1.19.2+ due to Mojang using 0 in the packet to say that you should read a string id instead.
+        soundDesc.addProperty("id", Registries.SOUND_EVENT.getRawId(soundEvent)); // raw 0-indexed sound_event registry id. The wire packet encodes (id + 1),
+        // with 0 meaning "read an inline SoundEvent instead" — but that offset is applied by
+        // the packet codec (registryEntryHolder), NOT here. Adding it to the registry dump
+        // double-counts and shifts every consumer's sound lookup by one.
         soundDesc.addProperty("name", soundEvent.id().getPath());
 
         return soundDesc;
