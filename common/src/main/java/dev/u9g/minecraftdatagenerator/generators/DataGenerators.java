@@ -40,7 +40,7 @@ public class DataGenerators {
         }
     }
 
-    public static boolean runDataGenerators(Path outputDirectory) {
+    public static boolean runDataGenerators(Path outputDirectory, String versionName) {
         try {
             Files.createDirectories(outputDirectory);
         } catch (IOException e) {
@@ -61,6 +61,7 @@ public class DataGenerators {
             try {
                 String outputFileName = "%s.json".formatted(dataGenerator.getDataName());
                 JsonElement outputElement = dataGenerator.generateDataJson();
+                DataOverrides.apply(dataGenerator.getDataName(), outputElement, versionName);
                 Path outputFilePath = outputDirectory.resolve(outputFileName);
 
                 try (Writer writer = Files.newBufferedWriter(outputFilePath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {

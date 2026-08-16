@@ -16,7 +16,7 @@ public class MinecraftDataGenerator {
         System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));
         MinecraftDataGenerator.LOGGER.info("Starting data generation for version %s".formatted(versionName));
         Path dataDumpDirectory = serverRootDirectory.resolve("minecraft-data").resolve(versionName);
-        boolean success = DataGenerators.runDataGenerators(dataDumpDirectory);
+        boolean success = DataGenerators.runDataGenerators(dataDumpDirectory, versionName);
         if (success) {
             MinecraftDataGenerator.LOGGER.info("Data generation successful!");
         } else {
