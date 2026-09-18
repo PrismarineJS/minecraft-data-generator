@@ -174,7 +174,7 @@ public class MaterialsDataGenerator implements IDataGenerator {
 
                                         Map<Item, Float> materialSpeeds = materialMiningSpeeds.computeIfAbsent(materialName, k -> new LinkedHashMap<>());
                                         float baseSpeed = getToolSpeed(item);
-                                        materialSpeeds.put(item, baseSpeed);
+                                        materialSpeeds.putIfAbsent(item, baseSpeed);
                                     }
                                 }
                         );
