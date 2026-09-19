@@ -57,7 +57,7 @@ public class ItemsDataGenerator implements IDataGenerator {
                 itemDesc.add("repairWith", fixedWithArray);
             }
 
-            int maxDurability = item.getMaxAmount();
+            int maxDurability = item.getDurability();
             itemDesc.addProperty("maxDurability", maxDurability);
         }
         return itemDesc;
