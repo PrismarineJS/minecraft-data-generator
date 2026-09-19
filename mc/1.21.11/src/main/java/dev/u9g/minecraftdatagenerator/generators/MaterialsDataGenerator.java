@@ -37,6 +37,7 @@ public class MaterialsDataGenerator implements IDataGenerator {
         // Base speeds for each tool type
         put("wooden", 2.0f);
         put("stone", 4.0f);
+        put("copper", 5.0f);
         put("iron", 6.0f);
         put("diamond", 8.0f);
         put("netherite", 9.0f);
