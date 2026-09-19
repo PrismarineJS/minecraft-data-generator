@@ -6,6 +6,7 @@
   "mixins": [
     "BiomeAccessor",
     "BlockAccessor",
+    "BlockRayShapeMixin",
     "EnchantmentAccessor",
     "EntityTypeAccessor",
     "LanguageAccessor",
