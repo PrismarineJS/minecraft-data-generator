@@ -1,0 +1,11 @@
+const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
+
+assert.ok(process.argv[2], 'Usage: node tools/testLegacyItemNames.js <generated-version-directory>')
+const items = JSON.parse(fs.readFileSync(path.join(process.argv[2], 'items.json')))
+const byName = Object.fromEntries(items.map(item => [item.name, item]))
+assert.strictEqual(byName.stone.displayName, 'Stone')
+assert.strictEqual(byName.apple.displayName, 'Apple')
+assert.strictEqual(byName.wool.displayName, 'White Wool')
+console.log('Legacy block, item and metadata-dependent display names passed')

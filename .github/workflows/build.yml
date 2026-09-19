@@ -70,6 +70,10 @@ jobs:
       - name: Generate ${{ matrix.version }}
         run: ./gradlew :mc:${{ matrix.version }}:runServer --stacktrace
 
+      - name: Check legacy item display names
+        if: contains(fromJSON('["1.11.2", "1.12.2"]'), matrix.version)
+        run: node tools/testLegacyItemNames.js mc/${{ matrix.version }}/run/server/minecraft-data/${{ matrix.version }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
