@@ -70,6 +70,10 @@ jobs:
       - name: Generate ${{ matrix.version }}
         run: ./gradlew :mc:${{ matrix.version }}:runServer --stacktrace
 
+      - name: Check generated enchantment applicability and rarity
+        if: contains(fromJSON('["1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.19.2", "1.20", "1.20.4"]'), matrix.version)
+        run: node tools/testEnchantments.js mc/${{ matrix.version }}/run/server/minecraft-data/${{ matrix.version }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
