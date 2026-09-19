@@ -58,18 +58,30 @@ public class RecipeDataGenerator implements IDataGenerator {
     private static List<JsonObject> generateShaped(ShapedRecipeType recipe) {
         int width = recipe.method_14272();
         int height = recipe.method_14273();
-        List<List<JsonElement>> slots = new ArrayList<>();
+        List<List<Alternative>> slots = new ArrayList<>();
         for (Ingredient ingredient : recipe.method_14252()) slots.add(alternativesFor(ingredient));
         List<JsonObject> recipes = new ArrayList<>();
-        for (List<JsonElement> cells : cartesianProduct(slots)) {
+        for (List<Alternative> cells : cartesianProduct(slots)) {
+            // Crafting leaves each ingredient's recipe remainder in its slot (milk bucket leaves a bucket).
             JsonArray inShape = new JsonArray();
+            JsonArray outShape = new JsonArray();
+            boolean hasRemainder = false;
             for (int y = 0; y < height; y++) {
                 JsonArray row = new JsonArray();
-                for (int x = 0; x < width; x++) row.add(cells.get(y * width + x));
+                JsonArray outRow = new JsonArray();
+                for (int x = 0; x < width; x++) {
+                    Alternative cell = cells.get(y * width + x);
+                    row.add(cell.json);
+                    Item remainder = cell.item == null ? null : cell.item.getRecipeRemainder();
+                    hasRemainder |= remainder != null;
+                    outRow.add(remainder == null ? JsonNull.INSTANCE : new JsonPrimitive(Registries.ITEMS.getRawId(remainder)));
+                }
                 inShape.add(row);
+                outShape.add(outRow);
             }
             JsonObject json = new JsonObject();
             json.add("inShape", inShape);
+            if (hasRemainder) json.add("outShape", outShape);
             json.add("result", resultFor(recipe.getOutput()));
             recipes.add(json);
         }
@@ -77,15 +89,15 @@ public class RecipeDataGenerator implements IDataGenerator {
     }
 
     private static List<JsonObject> generateShapeless(ShapelessRecipeType recipe) {
-        List<List<JsonElement>> slots = new ArrayList<>();
+        List<List<Alternative>> slots = new ArrayList<>();
         for (Ingredient ingredient : recipe.method_14252()) {
-            List<JsonElement> alternatives = alternativesFor(ingredient);
-            if (!alternatives.get(0).isJsonNull()) slots.add(alternatives);
+            List<Alternative> alternatives = alternativesFor(ingredient);
+            if (alternatives.get(0).item != null) slots.add(alternatives);
         }
         List<JsonObject> recipes = new ArrayList<>();
-        for (List<JsonElement> cells : cartesianProduct(slots)) {
+        for (List<Alternative> cells : cartesianProduct(slots)) {
             JsonArray ingredients = new JsonArray();
-            cells.forEach(ingredients::add);
+            for (Alternative cell : cells) ingredients.add(cell.json);
             JsonObject json = new JsonObject();
             json.add("ingredients", ingredients);
             json.add("result", resultFor(recipe.getOutput()));
@@ -105,11 +117,11 @@ public class RecipeDataGenerator implements IDataGenerator {
     // An ingredient is a list of accepted stacks. A bare id means any metadata of that item;
     // it is used when the stacks cover every variant of one item, matching how vanilla
     // accepts each slot independently (mixed plank types craft a crafting table).
-    private static List<JsonElement> alternativesFor(Ingredient ingredient) {
+    private static List<Alternative> alternativesFor(Ingredient ingredient) {
         ItemStack[] stacks = ingredient.method_14244();
-        List<JsonElement> alternatives = new ArrayList<>();
+        List<Alternative> alternatives = new ArrayList<>();
         if (stacks.length == 0) {
-            alternatives.add(JsonNull.INSTANCE);
+            alternatives.add(new Alternative(JsonNull.INSTANCE, null));
             return alternatives;
         }
         Item item = stacks[0].getItem();
@@ -120,11 +132,22 @@ public class RecipeDataGenerator implements IDataGenerator {
             damages.add(stack.getDamage());
         }
         if (sameItem && (damages.contains(WILDCARD_DAMAGE) || damages.containsAll(variantsOf(item)))) {
-            alternatives.add(new JsonPrimitive(Registries.ITEMS.getRawId(item)));
+            alternatives.add(new Alternative(new JsonPrimitive(Registries.ITEMS.getRawId(item)), item));
             return alternatives;
         }
-        for (ItemStack stack : stacks) alternatives.add(cellFor(stack));
+        for (ItemStack stack : stacks) alternatives.add(new Alternative(cellFor(stack), stack.getItem()));
         return alternatives;
+    }
+
+    // One accepted stack of an ingredient; item is null for an empty slot.
+    private static final class Alternative {
+        final JsonElement json;
+        final Item item;
+
+        Alternative(JsonElement json, Item item) {
+            this.json = json;
+            this.item = item;
+        }
     }
 
     private static JsonElement cellFor(ItemStack stack) {

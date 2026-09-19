@@ -60,14 +60,26 @@ public class RecipeDataGenerator implements IDataGenerator {
         int width = accessor.getWidth();
         int height = accessor.getHeight();
         ItemStack[] ingredients = accessor.getIngredients();
+        // Crafting leaves each ingredient's recipe remainder in its slot (milk bucket leaves a bucket).
         JsonArray inShape = new JsonArray();
+        JsonArray outShape = new JsonArray();
+        boolean hasRemainder = false;
         for (int y = 0; y < height; y++) {
             JsonArray row = new JsonArray();
-            for (int x = 0; x < width; x++) row.add(cellFor(ingredients[y * width + x]));
+            JsonArray outRow = new JsonArray();
+            for (int x = 0; x < width; x++) {
+                ItemStack stack = ingredients[y * width + x];
+                row.add(cellFor(stack));
+                Item remainder = isEmpty(stack) ? null : stack.getItem().getRecipeRemainder();
+                hasRemainder |= remainder != null;
+                outRow.add(remainder == null ? JsonNull.INSTANCE : new JsonPrimitive(Registries.ITEMS.getRawId(remainder)));
+            }
             inShape.add(row);
+            outShape.add(outRow);
         }
         JsonObject json = new JsonObject();
         json.add("inShape", inShape);
+        if (hasRemainder) json.add("outShape", outShape);
         json.add("result", resultFor(recipe.getOutput()));
         return json;
     }
