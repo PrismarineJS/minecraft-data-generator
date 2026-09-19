@@ -31,8 +31,10 @@ public class EnchantmentsDataGenerator implements IDataGenerator {
 
     //Equation enchantment costs follow is a * level + b, so we can easily retrieve a and b by passing zero level
     private static JsonObject generateEnchantmentMinPowerCoefficients(Enchantment enchantment) {
-        int b = enchantment.getMinLevel();
-        int a = enchantment.getMaxLevel() - b;
+        // cost(level) = a * level + b; the definition stores base + perLevelAboveFirst * (level - 1)
+        Enchantment.Cost cost = enchantment.definition().minCost();
+        int a = cost.perLevelAboveFirst();
+        int b = cost.base() - a;
 
         JsonObject resultObject = new JsonObject();
         resultObject.addProperty("a", a);
@@ -41,8 +43,9 @@ public class EnchantmentsDataGenerator implements IDataGenerator {
     }
 
     private static JsonObject generateEnchantmentMaxPowerCoefficients(Enchantment enchantment) {
-        int b = enchantment.getMinLevel();
-        int a = enchantment.getMaxLevel() - b;
+        Enchantment.Cost cost = enchantment.definition().maxCost();
+        int a = cost.perLevelAboveFirst();
+        int b = cost.base() - a;
 
         JsonObject resultObject = new JsonObject();
         resultObject.addProperty("a", a);
