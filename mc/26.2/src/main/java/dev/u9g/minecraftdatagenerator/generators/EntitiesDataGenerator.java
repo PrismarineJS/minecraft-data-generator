@@ -11,11 +11,13 @@ import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ambient.AmbientCreature;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.fish.WaterAnimal;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.projectile.Projectile;
 
@@ -40,7 +42,7 @@ public class EntitiesDataGenerator implements IDataGenerator {
             Entity entityObject = entityType.create(minecraftServer.overworld(), EntitySpawnReason.NATURAL);
             entityTypeString = entityObject != null ? getEntityTypeForClass(entityObject.getClass()) : "unknown";
         }
-        if (entityType == EntityType.PLAYER) {
+        if (entityType == EntityTypes.PLAYER) {
             entityTypeString = "player";
         }
 
@@ -51,7 +53,7 @@ public class EntitiesDataGenerator implements IDataGenerator {
     }
 
     private static String getCategoryFrom(EntityType<?> entityType) {
-        if (entityType == EntityType.PLAYER) return "UNKNOWN";
+        if (entityType == EntityTypes.PLAYER) return "UNKNOWN";
         Entity entity = entityType.create(DGU.getWorld(), EntitySpawnReason.NATURAL);
         if (entity == null)
             throw new Error("Entity was null after trying to create a: " + DGU.translateText(entityType.getDescriptionId()));
@@ -100,6 +102,12 @@ public class EntitiesDataGenerator implements IDataGenerator {
         }
         if (AmbientCreature.class.isAssignableFrom(entityClass)) {
             return "ambient";
+        }
+
+        //Since 26.2 slimes extend AbstractCubeMob, which is an AgeableMob, so they would be
+        //reported as "passive" without this check. Enemy keeps them classified as they were before.
+        if (Enemy.class.isAssignableFrom(entityClass)) {
+            return "mob";
         }
 
         //Second level classifications. PathAwareEntity is not included because it
