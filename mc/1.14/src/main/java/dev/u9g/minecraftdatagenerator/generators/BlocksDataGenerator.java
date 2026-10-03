@@ -8,6 +8,7 @@ import dev.u9g.minecraftdatagenerator.util.DGU;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -103,7 +104,7 @@ public class BlocksDataGenerator implements IDataGenerator {
         blockDesc.addProperty("hardness", hardness);
         blockDesc.addProperty("resistance", block.getBlastResistance());
         blockDesc.addProperty("stackSize", block.asItem().getMaxAmount());
-        blockDesc.addProperty("diggable", hardness != -1.0f && !(block instanceof AirBlock));
+        blockDesc.addProperty("diggable", hardness != -1.0f && !(block instanceof AirBlock) && !(block instanceof FluidBlock));
         JsonObject effTools = new JsonObject();
         effectiveTools.forEach(item -> effTools.addProperty(
                 String.valueOf(Registry.ITEM.getRawId(item)), // key
