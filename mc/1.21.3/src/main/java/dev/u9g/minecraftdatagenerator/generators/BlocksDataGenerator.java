@@ -116,7 +116,7 @@ public class BlocksDataGenerator implements IDataGenerator {
             return "default";
         }
         return matchingMaterials.stream()
-            .filter(m -> m.getMaterialName().startsWith("mineable/"))
+            .filter(m -> !m.getMaterialName().startsWith("incorrect_for_"))
             .findFirst()
             .map(MaterialsDataGenerator.MaterialInfo::getMaterialName)
             .orElseGet(() -> matchingMaterials.getFirst().getMaterialName());
