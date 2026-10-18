@@ -39,7 +39,7 @@ public class ItemsDataGenerator implements IDataGenerator {
         itemDesc.addProperty("id", Registries.ITEMS.getRawId(item));
         itemDesc.addProperty("name", Objects.requireNonNull(registryKey).getPath());
 
-        itemDesc.addProperty("displayName", DGU.translateText(item.getTranslationKey()));
+        itemDesc.addProperty("displayName", item.getDisplayName(DGU.stackFor(item)));
         itemDesc.addProperty("stackSize", item.getMaxCount());
 
         JsonArray enchantCategoriesArray = new JsonArray();
