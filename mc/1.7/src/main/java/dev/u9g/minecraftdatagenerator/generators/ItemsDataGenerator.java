@@ -71,8 +71,8 @@ public class ItemsDataGenerator implements IDataGenerator {
         if (item instanceof VariantBlockItem it) {
             JsonArray variations = new JsonArray();
             int i = 0;
-            JsonObject obj = new JsonObject();
             for (String variant : ((VariantBlockItemAccessor) it).variants()) {
+                JsonObject obj = new JsonObject();
                 ItemStack stack = new ItemStack(item, 1, i);
                 obj.add("id", new JsonPrimitive(i));
                 obj.add("name", new JsonPrimitive(variant));

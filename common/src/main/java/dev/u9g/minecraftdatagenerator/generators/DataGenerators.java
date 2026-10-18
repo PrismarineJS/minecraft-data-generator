@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 public class DataGenerators {
     private static final List<IDataGenerator> GENERATORS = new ArrayList<>();
+    private static int initializationFailures = 0;
     private static final Logger LOGGER = Logger.getLogger(DataGenerators.class.getSimpleName());
 
     static {
@@ -35,6 +36,7 @@ public class DataGenerators {
             try {
                 GENERATORS.add(generatorClass.getDeclaredConstructor().newInstance());
             } catch (ReflectiveOperationException e) {
+                initializationFailures++;
                 LOGGER.log(Level.SEVERE, "Failed to instantiate data generator %s".formatted(generatorClass.getName()), e);
             }
         }
@@ -48,7 +50,7 @@ public class DataGenerators {
             return false;
         }
 
-        int generatorsFailed = 0;
+        int generatorsFailed = initializationFailures;
         LOGGER.info("Running minecraft data generators, output at %s".formatted(outputDirectory));
 
         for (IDataGenerator dataGenerator : GENERATORS) {
