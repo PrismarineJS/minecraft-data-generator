@@ -16,6 +16,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -115,7 +116,11 @@ public class BlocksDataGenerator implements IDataGenerator {
         if (matchingMaterials.isEmpty()) {
             return "default";
         }
-        return matchingMaterials.getFirst().getMaterialName();
+        return matchingMaterials.stream()
+                .filter(material -> !material.getMaterialName().startsWith("incorrect_for_"))
+                .findFirst()
+                .map(MaterialsDataGenerator.MaterialInfo::getMaterialName)
+                .orElseGet(() -> matchingMaterials.getFirst().getMaterialName());
     }
 
     public static JsonObject generateBlock(List<MaterialsDataGenerator.MaterialInfo> materials, Block block) {
@@ -135,7 +140,7 @@ public class BlocksDataGenerator implements IDataGenerator {
         blockDesc.addProperty("hardness", block.defaultDestroyTime());
         blockDesc.addProperty("resistance", block.getExplosionResistance());
         blockDesc.addProperty("stackSize", block.asItem().getDefaultMaxStackSize());
-        blockDesc.addProperty("diggable", block.defaultDestroyTime() != -1.0f && !(block instanceof AirBlock));
+        blockDesc.addProperty("diggable", block.defaultDestroyTime() != -1.0f && !(block instanceof AirBlock) && !(block instanceof LiquidBlock));
 //        JsonObject effTools = new JsonObject();
 //        effectiveTools.forEach(item -> effTools.addProperty(
 //                String.valueOf(Registry.ITEM.getRawId(item)), // key

@@ -15,6 +15,16 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import java.util.List;
 
 public class EnchantmentsDataGenerator implements IDataGenerator {
+    private static String getRarityName(int weight) {
+        return switch (weight) {
+            case 10 -> "common";
+            case 5 -> "uncommon";
+            case 2 -> "rare";
+            case 1 -> "very_rare";
+            default -> null;
+        };
+    }
+
     public static String getEnchantmentTargetName(HolderSet<Item> target) {
         TagKey<Item> tagKey = target.unwrapKey().orElseThrow();
         return tagKey.location().getPath().split("/")[1];
@@ -82,7 +92,20 @@ public class EnchantmentsDataGenerator implements IDataGenerator {
         }
         enchantmentDesc.add("exclude", excludes);
         enchantmentDesc.addProperty("category", getEnchantmentTargetName(enchantment.definition().supportedItems()));
-        enchantmentDesc.addProperty("weight", enchantment.definition().weight());
+        JsonArray supportedItems = new JsonArray();
+        Registry<Item> itemRegistry = DGU.getWorld().registryAccess().lookupOrThrow(Registries.ITEM);
+        itemRegistry.forEach(item -> {
+            if (enchantment.canEnchant(item.getDefaultInstance())) {
+                supportedItems.add(itemRegistry.getKey(item).getPath());
+            }
+        });
+        enchantmentDesc.add("supportedItems", supportedItems);
+        int weight = enchantment.definition().weight();
+        enchantmentDesc.addProperty("weight", weight);
+        String rarity = getRarityName(weight);
+        if (rarity != null) {
+            enchantmentDesc.addProperty("rarity", rarity);
+        }
         enchantmentDesc.addProperty("tradeable", isEnchantmentInTag(enchantment, "tradeable"));
         enchantmentDesc.addProperty("discoverable", isEnchantmentInTag(enchantment, "on_random_loot"));
 
