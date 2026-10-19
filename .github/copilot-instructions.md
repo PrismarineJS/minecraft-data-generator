@@ -22,7 +22,7 @@ Generated data ends up under `mc/<version>/run/server/minecraft-data` in the rep
 minecraft-data-generator typically needs updates every time there is a new Minecraft version, particularly if there was code changes
 around one of the areas that our extractors touches (e.g. an API changes, gets renamed, etc.).
 
-As explained in the README.md, there is an auto update workflow that typically creates scaffolding PRs (under the `bump` branch) whenever there is a new minecraft update.
+As explained in the README.md, there is an auto update workflow that typically creates scaffolding PRs (one branch per version, like `bump_26_3`) whenever there is a new minecraft update.
 These PRs are simply copying old version code into new, so there may be changes and other code fixes needed to support the new version. It's your
 job to help plug the gaps by making these changes until the build passes for the given version.
 It's also possible that there maybe missing or broken generated data even if the build is passing: in these cases, listen to the user's request
