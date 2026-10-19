@@ -116,7 +116,11 @@ public class BlocksDataGenerator implements IDataGenerator {
         if (matchingMaterials.isEmpty()) {
             return "default";
         }
-        return matchingMaterials.getFirst().getMaterialName();
+        return matchingMaterials.stream()
+            .filter(m -> !m.getMaterialName().startsWith("incorrect_for_"))
+            .findFirst()
+            .map(MaterialsDataGenerator.MaterialInfo::getMaterialName)
+            .orElseGet(() -> matchingMaterials.getFirst().getMaterialName());
     }
 
     public static JsonObject generateBlock(List<MaterialsDataGenerator.MaterialInfo> materials, Block block) {
