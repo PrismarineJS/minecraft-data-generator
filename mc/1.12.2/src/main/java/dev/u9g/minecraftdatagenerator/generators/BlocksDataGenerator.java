@@ -96,7 +96,7 @@ public class BlocksDataGenerator implements IDataGenerator {
         blockDesc.addProperty("hardness", hardness);
         blockDesc.addProperty("resistance", ((BlockAccessor) block).getBlastResistance());
         blockDesc.addProperty("stackSize", Item.fromBlock(block).getMaxCount());
-        blockDesc.addProperty("diggable", hardness != -1.0f && !(block instanceof AirBlock));
+        blockDesc.addProperty("diggable", hardness != -1.0f && !(block instanceof AirBlock) && !defaultState.getMaterial().isFluid());
         JsonObject effTools = new JsonObject();
         effectiveTools.forEach(item -> effTools.addProperty(
                 String.valueOf(Registries.ITEMS.getRawId(item)), // key

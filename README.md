@@ -61,3 +61,8 @@ This is so because the integrated server is always bundled with clients and Moja
 This way we can access client information and classes while running a modded server environment.
 
 The `common` module shares common mod logic to allow us to deduplicate similar code across versions.
+
+## Contributing and support
+
+Read [the contribution guide](CONTRIBUTING.md) for development and review.
+Use [the support guide](SUPPORT.md) for questions and issue routing.
