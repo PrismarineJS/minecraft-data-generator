@@ -12,6 +12,8 @@
     "MiningToolItemAccessor",
     "NoteBlockAccessor",
     "ReadyMixin",
+    "ShapedRecipeTypeAccessor",
+    "ShapelessRecipeTypeAccessor",
     "StatusEffectAccessor"
   ],
   "injectors": {
