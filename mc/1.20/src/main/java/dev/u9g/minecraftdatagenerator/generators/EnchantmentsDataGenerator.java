@@ -66,7 +66,16 @@ public class EnchantmentsDataGenerator implements IDataGenerator {
         enchantmentDesc.add("exclude", excludes);
 
         enchantmentDesc.addProperty("category", getEnchantmentTargetName(enchantment.target));
+        JsonArray supportedItems = new JsonArray();
+        var itemRegistry = DGU.getWorld().getRegistryManager().get(RegistryKeys.ITEM);
+        for (var item : itemRegistry) {
+            if (enchantment.isAcceptableItem(new net.minecraft.item.ItemStack(item))) {
+                supportedItems.add(itemRegistry.getId(item).getPath());
+            }
+        }
+        enchantmentDesc.add("supportedItems", supportedItems);
         enchantmentDesc.addProperty("weight", enchantment.getRarity().getWeight());
+        enchantmentDesc.addProperty("rarity", enchantment.getRarity().name().toLowerCase(Locale.ROOT));
         enchantmentDesc.addProperty("tradeable", enchantment.isAvailableForEnchantedBookOffer());
         enchantmentDesc.addProperty("discoverable", enchantment.isAvailableForRandomSelection());
 

@@ -71,7 +71,16 @@ public class EnchantmentsDataGenerator implements IDataGenerator {
         enchantmentDesc.add("exclude", excludes);
 
         enchantmentDesc.addProperty("category", getEnchantmentTargetName(enchantment.type));
+        JsonArray supportedItems = new JsonArray();
+        var itemRegistry = Registry.ITEM;
+        for (var item : itemRegistry) {
+            if (enchantment.isAcceptableItem(new net.minecraft.item.ItemStack(item))) {
+                supportedItems.add(itemRegistry.getId(item).getPath());
+            }
+        }
+        enchantmentDesc.add("supportedItems", supportedItems);
         enchantmentDesc.addProperty("weight", enchantment.getWeight().getWeight());
+        enchantmentDesc.addProperty("rarity", enchantment.getWeight().name().toLowerCase(Locale.ROOT));
         enchantmentDesc.addProperty("tradeable", true); // the first non-tradeable enchant came in 1.16, soul speed
         enchantmentDesc.addProperty("discoverable", true); // the first non-enchantable enchant came in 1.16, soul speed
 

@@ -28,6 +28,8 @@ public class MaterialsDataGenerator implements IDataGenerator {
     private static final List<ImmutableList<String>> COMPOSITE_MATERIALS = ImmutableList.<ImmutableList<String>>builder()
             .add(ImmutableList.of("plant", makeMaterialNameForTag(BlockTags.MINEABLE_WITH_AXE)))
             .add(ImmutableList.of("gourd", makeMaterialNameForTag(BlockTags.MINEABLE_WITH_AXE)))
+            .add(ImmutableList.of("plant", makeMaterialNameForTag(BlockTags.MINEABLE_WITH_HOE)))
+            .add(ImmutableList.of(makeMaterialNameForTag(BlockTags.SWORD_INSTANTLY_MINES), makeMaterialNameForTag(BlockTags.MINEABLE_WITH_AXE)))
             .add(ImmutableList.of(makeMaterialNameForTag(BlockTags.LEAVES), makeMaterialNameForTag(BlockTags.MINEABLE_WITH_HOE)))
             .add(ImmutableList.of(makeMaterialNameForTag(BlockTags.LEAVES), makeMaterialNameForTag(BlockTags.MINEABLE_WITH_AXE), makeMaterialNameForTag(BlockTags.MINEABLE_WITH_HOE)))
             .add(ImmutableList.of("vine_or_glow_lichen", "plant", makeMaterialNameForTag(BlockTags.MINEABLE_WITH_AXE)
@@ -37,6 +39,7 @@ public class MaterialsDataGenerator implements IDataGenerator {
         // Base speeds for each tool type
         put("wooden", 2.0f);
         put("stone", 4.0f);
+        put("copper", 5.0f);
         put("iron", 6.0f);
         put("diamond", 8.0f);
         put("netherite", 9.0f);
