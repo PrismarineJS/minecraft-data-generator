@@ -6,6 +6,7 @@
   "mixins": [
     "BiomeAccessor",
     "BlockAccessor",
+    "StairsBlockInvoker",
     "EndPortalFrameBlockAccessor",
     "EndPortalFrameBlockMixin",
     "LanguageAccessor",
