@@ -1,29 +1,52 @@
 name: handle-mcdata-update
 on:
+  pull_request_target:
+    types: [closed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       version:
-        description: 'What new version is like `1.21.6`'
-        required: true
-        default: '1.21.6'
+        description: 'New version (leave empty to advance the saved queue)'
+        required: false
       pr_number:
-        description: 'What is the relevant minecraft-data PR URL?'
+        description: 'What is the relevant minecraft-data PR number?'
         required: false
       issue_number:
         description: 'What is the relevant minecraft-data issue?'
         required: false
 
+concurrency:
+  group: mcdata-bump
+  queue: max
+
 jobs:
   update-mcdata:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.head.ref == 'bump' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       startsWith(github.event.pull_request.title, '🎈'))
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
+          ref: main
+          token: ${{ secrets.PAT_PASSWORD }}
           submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - run: npm install # install gh-helpers
-      - run: node .github/commands/bump.js ${{ github.event.inputs.version }}
+      - name: Queue a version request
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: node .github/commands/bump.js "$MC_VERSION"
         env:
           MC_VERSION: ${{ github.event.inputs.version }}
           MCDATA_PULL_NO: ${{ github.event.inputs.pr_number }}
           MCDATA_ISSUE_NO: ${{ github.event.inputs.issue_number }}
+          GITHUB_TOKEN: ${{ secrets.PAT_PASSWORD }}
+      - name: Advance the saved queue
+        if: github.event_name == 'pull_request_target' || github.event.inputs.version == ''
+        run: node .github/commands/bump.js --advance
+        env:
           GITHUB_TOKEN: ${{ secrets.PAT_PASSWORD }}

@@ -29,6 +29,34 @@ You can then find the minecraft-data in the `mc/<version>/run/minecraft-data` di
 Generally, our automated PR system will automatically create a new PR for a new version, 
 so you just have to clone the auto opened PR and continue work on it.
 
+The bot keeps one active `bump` PR. Further version requests are saved in that
+PR's body, with a visible queue and a hidden `WF_STATE` JSON block containing the
+version and minecraft-data PR/issue numbers. Keep that block when editing the
+description.
+
+Merging or closing the PR opens the next queued version from the latest `main`
+and transfers the remaining queue to it. Closing without merging skips that
+version. For example, if 26.4 and 26.5 are queued behind 26.3, merging 26.3 opens
+26.4; closing 26.4 then opens 26.5 using the implementation already on `main`.
+The PRs link to their predecessor and successor so the queue can be followed.
+Duplicate requests for versions already handled are ignored, including skipped
+versions. An empty queue does nothing.
+
+If a workflow fails, rerun it: the queue remains in the PR body, and a successor
+that was already created is recovered without overwriting its contributor work.
+The dispatch and closure handlers share a concurrency group to serialize updates.
+No routine minecraft-data lookup is needed.
+
+The workflow explicitly invokes `bump.js <version>` for new requests and
+`bump.js --advance` to continue the saved queue. To retry or bootstrap a saved
+queue manually, run `handle-mcdata-update` with its version input empty.
+
+PRs created before this system need a one-time `WF_STATE` initialization if they
+have a queue to carry forward. Old closed PRs without state are ignored; an open
+bump PR without state must be initialized before accepting new requests.
+
+Run `npm test` to test the queue and handoff behavior without GitHub writes.
+
 ### Manual setup
 
 To add a new version manually, run

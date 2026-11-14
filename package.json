@@ -4,13 +4,14 @@
   "description": "This tool generates minecraft-data files based on a running a server on client classpath using a fabric mod. The supported versions can be read in the directory structure. Every version has its own directory.",
   "main": "index.js",
   "scripts": {
+    "test": "node --test .github/commands/bump-state.test.js .github/commands/bump-git.test.js",
     "fix": "standard --fix .github tools",
     "bump": "node tools/newVersion.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gh-helpers": "^0.3.5",
+    "gh-helpers": "^1.3.0",
     "standard": "^17.1.2"
   }
 }
