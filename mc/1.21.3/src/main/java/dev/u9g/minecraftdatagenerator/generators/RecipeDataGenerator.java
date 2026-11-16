@@ -40,6 +40,8 @@ public class RecipeDataGenerator implements IDataGenerator {
             if (recipe instanceof ShapedRecipe sr) {
                 generateShapedRecipe(registryManager, finalObj, sr, 0);
             } else if (recipe instanceof ShapelessRecipe sl) {
+                // recipes whose result is computed at craft time (map extending) assemble to air here: skip them
+                if (sl.craft(CraftingRecipeInput.EMPTY, registryManager).isEmpty()) continue;
                 var ingredients = new JsonArray();
                 for (Ingredient ingredient : sl.getIngredientPlacement().getIngredients()) {
                     if (ingredient.getMatchingItems().isEmpty()) continue;
@@ -64,6 +66,7 @@ public class RecipeDataGenerator implements IDataGenerator {
     }
 
     private void generateShapedRecipe(DynamicRegistryManager registryManager, JsonObject finalObj, ShapedRecipe sr, int n) {
+        if (sr.craft(CraftingRecipeInput.EMPTY, registryManager).isEmpty()) return; // see the shapeless case
         boolean hasIncremented = false;
         var ingredients = sr.getIngredients();
         List<Integer> ingr = new ArrayList<>();
