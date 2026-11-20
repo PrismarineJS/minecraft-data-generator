@@ -100,7 +100,7 @@ public class BlocksDataGenerator implements IDataGenerator {
         return propertyObject;
     }
 
-    private static String findMatchingBlockMaterial(BlockState blockState, List<MaterialsDataGenerator.MaterialInfo> materials) {
+    static String findMatchingBlockMaterial(BlockState blockState, List<MaterialsDataGenerator.MaterialInfo> materials) {
         List<MaterialsDataGenerator.MaterialInfo> matchingMaterials = materials.stream()
                 .filter(material -> material.getPredicate().test(blockState))
                 .collect(Collectors.toList());
@@ -146,7 +146,7 @@ public class BlocksDataGenerator implements IDataGenerator {
 //                item.getMiningSpeedMultiplier(item.getDefaultStack(), defaultState) // value
 //        ));
 //        blockDesc.add("effectiveTools", effTools);
-        blockDesc.addProperty("material", findMatchingBlockMaterial(defaultState, materials));
+        blockDesc.addProperty("material", MaterialsDataGenerator.getBlockMaterial(block));
 
         blockDesc.addProperty("transparent", !defaultState.isOpaque());
         blockDesc.addProperty("emitLight", defaultState.getLuminance());
